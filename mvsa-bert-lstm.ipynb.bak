@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 22,
    "id": "037e47a3",
    "metadata": {},
    "outputs": [
@@ -12,7 +12,7 @@
      "text": [
       "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount(\"/content/drive\", force_remount=True).\n",
       "Successfully accessed: /content/drive/MyDrive/Colab Notebooks/MVSA_Single\n",
-      "Total items found: 13\n",
+      "Total items found: 17\n",
       "Sample files: ['data', 'labelResultAll.txt', 'mvsa_single_processed.parquet', 'checkpoints', 'vilbert_final']\n"
      ]
     }
@@ -39,7 +39,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 23,
    "id": "5e98ee7f",
    "metadata": {},
    "outputs": [],
@@ -59,7 +59,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 24,
    "id": "f9a2a782",
    "metadata": {},
    "outputs": [
@@ -82,7 +82,7 @@
      "data": {
       "text/html": [
        "\n",
-       "  <div id=\"df-d0db217c-794a-4e58-af07-bcb85a26fa74\" class=\"colab-df-container\">\n",
+       "  <div id=\"df-b9364f56-0595-4be2-b512-cc43b30f6443\" class=\"colab-df-container\">\n",
        "    <div>\n",
        "<style scoped>\n",
        "    .dataframe tbody tr th:only-of-type {\n",
@@ -161,7 +161,7 @@
        "    <div class=\"colab-df-buttons\">\n",
        "      \n",
        "  <div class=\"colab-df-container\">\n",
-       "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-d0db217c-794a-4e58-af07-bcb85a26fa74')\"\n",
+       "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-b9364f56-0595-4be2-b512-cc43b30f6443')\"\n",
        "            title=\"Convert this dataframe to an interactive table.\"\n",
        "            style=\"display:none;\">\n",
        "      \n",
@@ -213,12 +213,12 @@
        "\n",
        "    <script>\n",
        "      const buttonEl =\n",
-       "        document.querySelector('#df-d0db217c-794a-4e58-af07-bcb85a26fa74 button.colab-df-convert');\n",
+       "        document.querySelector('#df-b9364f56-0595-4be2-b512-cc43b30f6443 button.colab-df-convert');\n",
        "      buttonEl.style.display =\n",
        "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
        "\n",
        "      async function convertToInteractive(key) {\n",
-       "        const element = document.querySelector('#df-d0db217c-794a-4e58-af07-bcb85a26fa74');\n",
+       "        const element = document.querySelector('#df-b9364f56-0595-4be2-b512-cc43b30f6443');\n",
        "        const dataTable =\n",
        "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
        "                                                    [key], {});\n",
@@ -383,8 +383,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
-   "id": "0df967b4",
+   "execution_count": 25,
+   "id": "645486b5",
    "metadata": {},
    "outputs": [
     {
@@ -436,8 +436,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
-   "id": "0ff97593",
+   "execution_count": 26,
+   "id": "f909ad3e",
    "metadata": {},
    "outputs": [
     {
@@ -445,55 +445,58 @@
      "output_type": "stream",
      "text": [
       "==============================================================\n",
-      "   Multimodal BERT + Visual BiLSTM Sentiment - Configuration\n",
+      "   Multimodal BERT + ResNet50-LSTM Sentiment - Configuration\n",
       "==============================================================\n",
+      "  Mode                    : msa_bert_resnet50_lstm\n",
       "  Device                  : CUDA\n",
       "  GPU                     : Tesla T4\n",
       "\n",
-      "  -- Text Encoder (BERT) -----------------------------------\n",
-      "  Model name              : bert-base-uncased\n",
-      "  Max sequence length     : 64\n",
+      "  -- Text Encoder (BERT) --------------------------------\n",
+      "  Backbone                : bert-base-uncased (HuggingFace pretrained)\n",
       "  BERT hidden dim         : 768\n",
-      "  Projected dim (to d_model): 256\n",
+      "  Projected dim           : 256  (shared d_model)\n",
       "  BERT fine-tune          : True\n",
+      "  Pooling strategy        : cls_token\n",
+      "  Max sequence length     : 64\n",
       "\n",
-      "  -- Visual Encoder (ResNet50 + BiLSTM) --------------------\n",
+      "  -- Image Encoder (ResNet50 + LSTM) --------------------\n",
       "  Backbone                : resnet50 (pretrained ImageNet)\n",
       "  Feature dim (raw)       : 2048\n",
-      "  Feature proj dim        : 256\n",
-      "  LSTM direction          : Bidirectional\n",
-      "  LSTM hidden dim         : 128 -> output 256\n",
-      "  LSTM layers             : 1\n",
+      "  Projected dim           : 256\n",
       "  Input image size        : 224x224\n",
       "  ResNet fine-tune        : True\n",
+      "  Visual LSTM direction   : Unidirectional\n",
+      "  Visual LSTM hidden dim  : 256  -> output 256\n",
+      "  Visual LSTM layers      : 2\n",
       "\n",
-      "  -- Co-Attention ------------------------------------------\n",
-      "  d_model                 : 256\n",
+      "  -- Co-Attention Mechanism ------------------------------\n",
+      "  Type                    : multi-head (bidirectional cross-modal)\n",
       "  Number of heads         : 8\n",
       "  Number of layers        : 2\n",
-      "  Head dimension          : 32\n",
+      "  d_model                 : 256  (shared text/image dimension)\n",
+      "  Head dimension          : 32  (d_model / num_heads)\n",
       "  FFN hidden dim          : 1024\n",
       "  Dropout                 : 0.1\n",
       "\n",
-      "  -- Fusion & Classifier -----------------------------------\n",
+      "  -- Fusion and Classifier -------------------------------\n",
       "  Fusion strategy         : concatenation\n",
       "  Fusion input dim        : 512\n",
       "  Classifier hidden       : 256\n",
-      "  Num output classes      : 3 (neg / neu / pos)\n",
+      "  Num output classes      : 3  (neg / neu / pos)\n",
       "  Classifier dropout      : 0.3\n",
       "\n",
-      "  -- Training Hyperparameters ------------------------------\n",
-      "  Epochs                  : 15\n",
+      "  -- Training Hyperparameters ----------------------------\n",
+      "  Epochs                  : 30\n",
       "  Batch size              : 16\n",
-      "  LR (main)               : 0.0002\n",
-      "  LR (BERT)               : 2e-05\n",
+      "  LR (main)               : 0.0001\n",
+      "  LR (BERT fine-tune)     : 2e-05\n",
       "  LR (ResNet fine-tune)   : 1e-05\n",
       "  Weight decay            : 0.0001\n",
       "  Gradient clip           : 1.0\n",
       "  LR scheduler            : CosineAnnealingLR\n",
-      "  Early-stop patience     : 4 epochs\n",
+      "  Early-stop patience     : 5 epochs\n",
       "\n",
-      "  -- Data ---------------------------------------------------\n",
+      "  -- Data ------------------------------------------------\n",
       "  Split (train/val/test)  : 0.8/0.1/0.1\n",
       "  Random seed             : 42\n",
       "==============================================================\n"
@@ -501,67 +504,78 @@
     }
    ],
    "source": [
-    "# Cell 5 - Model Configuration & Seed\n",
+    "# Cell 5 - MSA mode configuration and seed setup\n",
     "CONFIG = {\n",
     "    # Paths\n",
-    "    \"parquet_path\"       : parquet_path,\n",
-    "    \"checkpoint_dir\"     : \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_bilstm_checkpoints\",\n",
-    "    \"artifact_dir\"       : \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_bilstm_final\",\n",
+    "    \"parquet_path\": parquet_path,\n",
+    "    \"checkpoint_dir\": \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_lstm_checkpoints\",\n",
+    "    \"artifact_dir\": \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_lstm_final\",\n",
     "\n",
-    "    # Text Encoder (BERT)\n",
-    "    \"bert_model_name\"    : \"bert-base-uncased\",\n",
-    "    \"bert_max_len\"       : 64,\n",
-    "    \"bert_finetune\"      : True,\n",
-    "    \"bert_hidden_dim\"    : 768,\n",
-    "    \"text_proj_dim\"      : 256,\n",
+    "    # Mode identity\n",
+    "    \"mode_name\": \"msa_bert_resnet50_lstm\",\n",
     "\n",
-    "    # Image Encoder (ResNet50 + BiLSTM)\n",
-    "    \"image_backbone\"     : \"resnet50\",\n",
-    "    \"image_feature_dim\"  : 2048,\n",
-    "    \"image_proj_dim\"     : 256,\n",
-    "    \"image_lstm_hidden\"  : 128,\n",
-    "    \"image_lstm_layers\"  : 1,\n",
-    "    \"visual_bidirectional\": True,\n",
-    "    \"image_input_size\"   : 224,\n",
-    "    \"resnet_finetune\"    : True,\n",
+    "    # Text encoder (BERT)\n",
+    "    \"bert_model\": \"bert-base-uncased\",\n",
+    "    \"bert_hidden_dim\": 768,\n",
+    "    \"text_proj_dim\": 256,\n",
+    "    \"bert_finetune\": True,\n",
+    "    \"text_pooling\": \"cls_token\",\n",
+    "    \"max_seq_len\": 64,\n",
     "\n",
-    "    # Shared dimension for co-attention\n",
-    "    \"d_model\"            : 256,\n",
+    "    # Image encoder (ResNet50 + visual LSTM)\n",
+    "    \"image_backbone\": \"resnet50\",\n",
+    "    \"image_feature_dim\": 2048,\n",
+    "    \"image_proj_dim\": 256,\n",
+    "    \"image_input_size\": 224,\n",
+    "    \"resnet_finetune\": True,\n",
+    "    \"visual_lstm_hidden_dim\": 256,\n",
+    "    \"visual_lstm_layers\": 2,\n",
+    "    \"visual_lstm_bidirectional\": False,\n",
     "\n",
-    "    # Co-Attention\n",
-    "    \"num_heads\"          : 8,\n",
-    "    \"co_attn_layers\"     : 2,\n",
-    "    \"co_attn_ffn_dim\"    : 1024,\n",
-    "    \"co_attn_dropout\"    : 0.1,\n",
+    "    # Co-attention\n",
+    "    \"d_model\": 256,\n",
+    "    \"co_attn_type\": \"multi-head\",\n",
+    "    \"num_heads\": 8,\n",
+    "    \"co_attn_layers\": 2,\n",
+    "    \"co_attn_ffn_dim\": 1024,\n",
+    "    \"co_attn_dropout\": 0.1,\n",
     "\n",
-    "    # Fusion & Classifier\n",
-    "    \"fusion_strategy\"    : \"concatenation\",\n",
-    "    \"fusion_input_dim\"   : 512,\n",
-    "    \"classifier_hidden\"  : 256,\n",
-    "    \"num_classes\"        : 3,\n",
-    "    \"classifier_dropout\" : 0.3,\n",
+    "    # Fusion and classifier\n",
+    "    \"fusion_strategy\": \"concatenation\",\n",
+    "    \"fusion_input_dim\": 256 * 2,\n",
+    "    \"classifier_hidden\": 256,\n",
+    "    \"num_classes\": 3,\n",
+    "    \"classifier_dropout\": 0.3,\n",
     "\n",
     "    # Training\n",
-    "    \"epochs\"             : 20,\n",
-    "    \"batch_size\"         : 16,\n",
-    "    \"lr_main\"            : 2e-4,\n",
-    "    \"lr_bert\"            : 2e-5,\n",
-    "    \"lr_resnet_finetune\" : 1e-5,\n",
-    "    \"weight_decay\"       : 1e-4,\n",
-    "    \"gradient_clip\"      : 1.0,\n",
+    "    \"epochs\": 30,\n",
+    "    \"batch_size\": 16,\n",
+    "    \"lr_main\": 1e-4,\n",
+    "    \"lr_bert_finetune\": 2e-5,\n",
+    "    \"lr_resnet_finetune\": 1e-5,\n",
+    "    \"weight_decay\": 1e-4,\n",
+    "    \"gradient_clip\": 1.0,\n",
     "    \"early_stop_patience\": 5,\n",
-    "    \"scheduler\"          : \"CosineAnnealingLR\",\n",
+    "    \"scheduler\": \"CosineAnnealingLR\",\n",
     "\n",
     "    # Data split\n",
-    "    \"train_ratio\"        : 0.8,\n",
-    "    \"val_ratio\"          : 0.1,\n",
-    "    \"test_ratio\"         : 0.1,\n",
+    "    \"train_ratio\": 0.80,\n",
+    "    \"val_ratio\": 0.10,\n",
+    "    \"test_ratio\": 0.10,\n",
     "\n",
     "    # Reproducibility\n",
-    "    \"seed\"               : 42,\n",
-    "    \"num_workers\"        : 2,\n",
-    "    \"device\"             : \"cuda\" if torch.cuda.is_available() else \"cpu\",\n",
+    "    \"seed\": 42,\n",
+    "    \"num_workers\": 2,\n",
+    "    \"device\": \"cuda\" if torch.cuda.is_available() else \"cpu\",\n",
     "}\n",
+    "\n",
+    "_vout = CONFIG[\"visual_lstm_hidden_dim\"] * (2 if CONFIG[\"visual_lstm_bidirectional\"] else 1)\n",
+    "if CONFIG[\"text_proj_dim\"] != CONFIG[\"d_model\"]:\n",
+    "    raise ValueError(\"text_proj_dim must equal d_model for co-attention.\")\n",
+    "if _vout != CONFIG[\"d_model\"]:\n",
+    "    raise ValueError(\"visual_lstm_hidden_dim * directions must equal d_model for co-attention.\")\n",
+    "if CONFIG[\"fusion_input_dim\"] != CONFIG[\"d_model\"] * 2:\n",
+    "    raise ValueError(\"fusion_input_dim must equal d_model * 2.\")\n",
     "\n",
     "def set_seed(seed):\n",
     "    random.seed(seed)\n",
@@ -574,67 +588,63 @@
     "os.makedirs(CONFIG[\"checkpoint_dir\"], exist_ok=True)\n",
     "os.makedirs(CONFIG[\"artifact_dir\"], exist_ok=True)\n",
     "\n",
-    "visual_out_dim = CONFIG[\"image_lstm_hidden\"] * (2 if CONFIG[\"visual_bidirectional\"] else 1)\n",
-    "if CONFIG[\"text_proj_dim\"] != CONFIG[\"d_model\"]:\n",
-    "    raise ValueError(\"text_proj_dim must equal d_model for co-attention.\")\n",
-    "if visual_out_dim != CONFIG[\"d_model\"]:\n",
-    "    raise ValueError(\"image_lstm_hidden * directions must equal d_model for co-attention.\")\n",
-    "if CONFIG[\"fusion_input_dim\"] != CONFIG[\"d_model\"] * 2:\n",
-    "    raise ValueError(\"fusion_input_dim must equal d_model * 2.\")\n",
-    "\n",
     "SEP = \"=\" * 62\n",
     "print(SEP)\n",
-    "print(\"   Multimodal BERT + Visual BiLSTM Sentiment - Configuration\")\n",
+    "print(\"   Multimodal BERT + ResNet50-LSTM Sentiment - Configuration\")\n",
     "print(SEP)\n",
+    "print(f\"  Mode                    : {CONFIG['mode_name']}\")\n",
     "print(f\"  Device                  : {CONFIG['device'].upper()}\")\n",
     "if torch.cuda.is_available():\n",
     "    print(f\"  GPU                     : {torch.cuda.get_device_name(0)}\")\n",
     "\n",
-    "v_dir = \"Bidirectional\" if CONFIG[\"visual_bidirectional\"] else \"Unidirectional\"\n",
-    "print(\"\\n  -- Text Encoder (BERT) -----------------------------------\")\n",
-    "print(f\"  Model name              : {CONFIG['bert_model_name']}\")\n",
-    "print(f\"  Max sequence length     : {CONFIG['bert_max_len']}\")\n",
-    "print(f\"  BERT hidden dim         : {CONFIG['bert_hidden_dim']}\")\n",
-    "print(f\"  Projected dim (to d_model): {CONFIG['text_proj_dim']}\")\n",
-    "print(f\"  BERT fine-tune          : {CONFIG['bert_finetune']}\")\n",
+    "_vdir = \"Bidirectional\" if CONFIG[\"visual_lstm_bidirectional\"] else \"Unidirectional\"\n",
     "\n",
-    "print(\"\\n  -- Visual Encoder (ResNet50 + BiLSTM) --------------------\")\n",
+    "print(\"\\n  -- Text Encoder (BERT) --------------------------------\")\n",
+    "print(f\"  Backbone                : {CONFIG['bert_model']} (HuggingFace pretrained)\")\n",
+    "print(f\"  BERT hidden dim         : {CONFIG['bert_hidden_dim']}\")\n",
+    "print(f\"  Projected dim           : {CONFIG['text_proj_dim']}  (shared d_model)\")\n",
+    "print(f\"  BERT fine-tune          : {CONFIG['bert_finetune']}\")\n",
+    "print(f\"  Pooling strategy        : {CONFIG['text_pooling']}\")\n",
+    "print(f\"  Max sequence length     : {CONFIG['max_seq_len']}\")\n",
+    "\n",
+    "print(\"\\n  -- Image Encoder (ResNet50 + LSTM) --------------------\")\n",
     "print(f\"  Backbone                : {CONFIG['image_backbone']} (pretrained ImageNet)\")\n",
     "print(f\"  Feature dim (raw)       : {CONFIG['image_feature_dim']}\")\n",
-    "print(f\"  Feature proj dim        : {CONFIG['image_proj_dim']}\")\n",
-    "print(f\"  LSTM direction          : {v_dir}\")\n",
-    "print(f\"  LSTM hidden dim         : {CONFIG['image_lstm_hidden']} -> output {visual_out_dim}\")\n",
-    "print(f\"  LSTM layers             : {CONFIG['image_lstm_layers']}\")\n",
+    "print(f\"  Projected dim           : {CONFIG['image_proj_dim']}\")\n",
     "print(f\"  Input image size        : {CONFIG['image_input_size']}x{CONFIG['image_input_size']}\")\n",
     "print(f\"  ResNet fine-tune        : {CONFIG['resnet_finetune']}\")\n",
+    "print(f\"  Visual LSTM direction   : {_vdir}\")\n",
+    "print(f\"  Visual LSTM hidden dim  : {CONFIG['visual_lstm_hidden_dim']}  -> output {_vout}\")\n",
+    "print(f\"  Visual LSTM layers      : {CONFIG['visual_lstm_layers']}\")\n",
     "\n",
-    "print(\"\\n  -- Co-Attention ------------------------------------------\")\n",
-    "print(f\"  d_model                 : {CONFIG['d_model']}\")\n",
+    "print(\"\\n  -- Co-Attention Mechanism ------------------------------\")\n",
+    "print(f\"  Type                    : {CONFIG['co_attn_type']} (bidirectional cross-modal)\")\n",
     "print(f\"  Number of heads         : {CONFIG['num_heads']}\")\n",
     "print(f\"  Number of layers        : {CONFIG['co_attn_layers']}\")\n",
-    "print(f\"  Head dimension          : {CONFIG['d_model'] // CONFIG['num_heads']}\")\n",
+    "print(f\"  d_model                 : {CONFIG['d_model']}  (shared text/image dimension)\")\n",
+    "print(f\"  Head dimension          : {CONFIG['d_model'] // CONFIG['num_heads']}  (d_model / num_heads)\")\n",
     "print(f\"  FFN hidden dim          : {CONFIG['co_attn_ffn_dim']}\")\n",
     "print(f\"  Dropout                 : {CONFIG['co_attn_dropout']}\")\n",
     "\n",
-    "print(\"\\n  -- Fusion & Classifier -----------------------------------\")\n",
+    "print(\"\\n  -- Fusion and Classifier -------------------------------\")\n",
     "print(f\"  Fusion strategy         : {CONFIG['fusion_strategy']}\")\n",
     "print(f\"  Fusion input dim        : {CONFIG['fusion_input_dim']}\")\n",
     "print(f\"  Classifier hidden       : {CONFIG['classifier_hidden']}\")\n",
-    "print(f\"  Num output classes      : {CONFIG['num_classes']} (neg / neu / pos)\")\n",
+    "print(f\"  Num output classes      : {CONFIG['num_classes']}  (neg / neu / pos)\")\n",
     "print(f\"  Classifier dropout      : {CONFIG['classifier_dropout']}\")\n",
     "\n",
-    "print(\"\\n  -- Training Hyperparameters ------------------------------\")\n",
+    "print(\"\\n  -- Training Hyperparameters ----------------------------\")\n",
     "print(f\"  Epochs                  : {CONFIG['epochs']}\")\n",
     "print(f\"  Batch size              : {CONFIG['batch_size']}\")\n",
     "print(f\"  LR (main)               : {CONFIG['lr_main']}\")\n",
-    "print(f\"  LR (BERT)               : {CONFIG['lr_bert']}\")\n",
+    "print(f\"  LR (BERT fine-tune)     : {CONFIG['lr_bert_finetune']}\")\n",
     "print(f\"  LR (ResNet fine-tune)   : {CONFIG['lr_resnet_finetune']}\")\n",
     "print(f\"  Weight decay            : {CONFIG['weight_decay']}\")\n",
     "print(f\"  Gradient clip           : {CONFIG['gradient_clip']}\")\n",
     "print(f\"  LR scheduler            : {CONFIG['scheduler']}\")\n",
     "print(f\"  Early-stop patience     : {CONFIG['early_stop_patience']} epochs\")\n",
     "\n",
-    "print(\"\\n  -- Data ---------------------------------------------------\")\n",
+    "print(\"\\n  -- Data ------------------------------------------------\")\n",
     "print(f\"  Split (train/val/test)  : {CONFIG['train_ratio']}/{CONFIG['val_ratio']}/{CONFIG['test_ratio']}\")\n",
     "print(f\"  Random seed             : {CONFIG['seed']}\")\n",
     "print(SEP)"
@@ -642,8 +652,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
-   "id": "9ac59384",
+   "execution_count": 27,
+   "id": "4ced6fd0",
    "metadata": {},
    "outputs": [
     {
@@ -750,22 +760,14 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
-   "id": "8a7eb512",
+   "execution_count": 28,
+   "id": "3e0e012c",
    "metadata": {},
    "outputs": [
     {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n",
-      "WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"
-     ]
-    },
-    {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "a1b3adb6138e4d04b06d960e5daedb54",
+       "model_id": "b66a64fb680c46629957853a0f547df8",
        "version_major": 2,
        "version_minor": 0
       },
@@ -777,9 +779,17 @@
      "output_type": "display_data"
     },
     {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n",
+      "WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"
+     ]
+    },
+    {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "67078ecb3d79455384b4017b46fc342e",
+       "model_id": "dcacad7766314c6eac34bd95995ac7df",
        "version_major": 2,
        "version_minor": 0
       },
@@ -793,7 +803,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "6a19c0f4163143cab8abf2de9872e4d4",
+       "model_id": "9ab736adf3ac4751b6771afb75fd93d6",
        "version_major": 2,
        "version_minor": 0
       },
@@ -807,7 +817,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5363c9e07aef4feeb056a4cc027f5f4f",
+       "model_id": "766ae57e12c8473f8dc8bdd21a0e1565",
        "version_major": 2,
        "version_minor": 0
       },
@@ -837,7 +847,7 @@
    ],
    "source": [
     "# Cell 7 - Tokenizer, Dataset, and DataLoaders\n",
-    "tokenizer = AutoTokenizer.from_pretrained(CONFIG[\"bert_model_name\"], use_fast=True)\n",
+    "tokenizer = AutoTokenizer.from_pretrained(CONFIG[\"bert_model\"], use_fast=True)\n",
     "\n",
     "IMAGE_MEAN = [0.485, 0.456, 0.406]\n",
     "IMAGE_STD = [0.229, 0.224, 0.225]\n",
@@ -896,13 +906,13 @@
     "        }\n",
     "\n",
     "train_dataset = MVSABertImageDataset(\n",
-    "    df_train, tokenizer=tokenizer, max_len=CONFIG[\"bert_max_len\"], image_transform=train_transform\n",
+    "    df_train, tokenizer=tokenizer, max_len=CONFIG[\"max_seq_len\"], image_transform=train_transform\n",
     ")\n",
     "val_dataset = MVSABertImageDataset(\n",
-    "    df_val, tokenizer=tokenizer, max_len=CONFIG[\"bert_max_len\"], image_transform=eval_transform\n",
+    "    df_val, tokenizer=tokenizer, max_len=CONFIG[\"max_seq_len\"], image_transform=eval_transform\n",
     ")\n",
     "test_dataset = MVSABertImageDataset(\n",
-    "    df_test, tokenizer=tokenizer, max_len=CONFIG[\"bert_max_len\"], image_transform=eval_transform\n",
+    "    df_test, tokenizer=tokenizer, max_len=CONFIG[\"max_seq_len\"], image_transform=eval_transform\n",
     ")\n",
     "\n",
     "train_loader = DataLoader(\n",
@@ -944,14 +954,14 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
-   "id": "a13e07df",
+   "execution_count": 29,
+   "id": "1435f32e",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "ad8ff1b959f24f88b9faa63d87e9241a",
+       "model_id": "94a0200bb257426f9994dec2cdc74dd9",
        "version_major": 2,
        "version_minor": 0
       },
@@ -965,7 +975,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "8459581fa4414790b4834e202f7e321f",
+       "model_id": "121a4f1f9f6240e086757551532183d5",
        "version_major": 2,
        "version_minor": 0
       },
@@ -983,13 +993,13 @@
       "BertModel LOAD REPORT from: bert-base-uncased\n",
       "Key                                        | Status     |  | \n",
       "-------------------------------------------+------------+--+-\n",
-      "cls.predictions.transform.dense.bias       | UNEXPECTED |  | \n",
-      "cls.predictions.bias                       | UNEXPECTED |  | \n",
-      "cls.seq_relationship.bias                  | UNEXPECTED |  | \n",
-      "cls.predictions.transform.dense.weight     | UNEXPECTED |  | \n",
-      "cls.predictions.transform.LayerNorm.weight | UNEXPECTED |  | \n",
       "cls.predictions.transform.LayerNorm.bias   | UNEXPECTED |  | \n",
+      "cls.predictions.bias                       | UNEXPECTED |  | \n",
+      "cls.predictions.transform.dense.weight     | UNEXPECTED |  | \n",
       "cls.seq_relationship.weight                | UNEXPECTED |  | \n",
+      "cls.predictions.transform.LayerNorm.weight | UNEXPECTED |  | \n",
+      "cls.seq_relationship.bias                  | UNEXPECTED |  | \n",
+      "cls.predictions.transform.dense.bias       | UNEXPECTED |  | \n",
       "\n",
       "Notes:\n",
       "- UNEXPECTED\t:can be ignored when loading from different task/architecture; not ok if you expect identical arch.\n"
@@ -1006,15 +1016,15 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 97.8M/97.8M [00:00<00:00, 184MB/s]\n"
+      "100%|██████████| 97.8M/97.8M [00:02<00:00, 35.1MB/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Total parameters    : 137,400,131\n",
-      "Trainable parameters: 137,400,131\n",
+      "Total parameters    : 138,057,539\n",
+      "Trainable parameters: 138,057,539\n",
       "Forward pass OK | logits shape: (16, 3) (expect [B, 3])\n"
      ]
     },
@@ -1069,7 +1079,7 @@
        "      (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
        "    )\n",
        "  )\n",
-       "  (image_encoder): ImageEncoderBiLSTM(\n",
+       "  (image_encoder): ImageEncoderLSTM(\n",
        "    (backbone): Sequential(\n",
        "      (0): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)\n",
        "      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)\n",
@@ -1248,7 +1258,7 @@
        "      (0): Linear(in_features=2048, out_features=256, bias=True)\n",
        "      (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
        "    )\n",
-       "    (bilstm): LSTM(256, 128, batch_first=True, bidirectional=True)\n",
+       "    (lstm): LSTM(256, 256, num_layers=2, batch_first=True, dropout=0.3)\n",
        "  )\n",
        "  (co_attn_layers): ModuleList(\n",
        "    (0-1): 2 x CoAttentionLayer(\n",
@@ -1288,13 +1298,13 @@
        ")"
       ]
      },
-     "execution_count": 14,
+     "execution_count": 29,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "# Cell 8 - Model Architecture (BERT Text + Visual BiLSTM + Co-Attention)\n",
+    "# Cell 8 - Model Architecture (BERT Text + Visual LSTM + Co-Attention)\n",
     "class BERTTextEncoder(nn.Module):\n",
     "    def __init__(self, model_name, proj_dim, finetune=True):\n",
     "        super().__init__()\n",
@@ -1316,8 +1326,8 @@
     "        )\n",
     "        return self.proj(outputs.last_hidden_state)\n",
     "\n",
-    "class ImageEncoderBiLSTM(nn.Module):\n",
-    "    def __init__(self, proj_dim, hidden_dim, num_layers, finetune=True, bidirectional=True):\n",
+    "class ImageEncoderLSTM(nn.Module):\n",
+    "    def __init__(self, proj_dim, hidden_dim, num_layers, finetune=True, bidirectional=False):\n",
     "        super().__init__()\n",
     "        resnet = tv_models.resnet50(weights=tv_models.ResNet50_Weights.DEFAULT)\n",
     "        self.backbone = nn.Sequential(*list(resnet.children())[:-2])\n",
@@ -1334,7 +1344,7 @@
     "            nn.Linear(2048, proj_dim),\n",
     "            nn.LayerNorm(proj_dim),\n",
     "        )\n",
-    "        self.bilstm = nn.LSTM(\n",
+    "        self.lstm = nn.LSTM(\n",
     "            input_size=proj_dim,\n",
     "            hidden_size=hidden_dim,\n",
     "            num_layers=num_layers,\n",
@@ -1347,7 +1357,7 @@
     "        feat = self.backbone(pixel_values)\n",
     "        flat = feat.flatten(2).permute(0, 2, 1)\n",
     "        proj = self.proj(flat)\n",
-    "        out, _ = self.bilstm(proj)\n",
+    "        out, _ = self.lstm(proj)\n",
     "        return out\n",
     "\n",
     "    def train(self, mode=True):\n",
@@ -1401,17 +1411,18 @@
     "class MultimodalSentimentModel(nn.Module):\n",
     "    def __init__(self, config):\n",
     "        super().__init__()\n",
+    "        self.text_pooling = config.get(\"text_pooling\", \"cls_token\")\n",
     "        self.text_encoder = BERTTextEncoder(\n",
-    "            model_name=config[\"bert_model_name\"],\n",
+    "            model_name=config[\"bert_model\"],\n",
     "            proj_dim=config[\"text_proj_dim\"],\n",
     "            finetune=config[\"bert_finetune\"],\n",
     "        )\n",
-    "        self.image_encoder = ImageEncoderBiLSTM(\n",
+    "        self.image_encoder = ImageEncoderLSTM(\n",
     "            proj_dim=config[\"image_proj_dim\"],\n",
-    "            hidden_dim=config[\"image_lstm_hidden\"],\n",
-    "            num_layers=config[\"image_lstm_layers\"],\n",
+    "            hidden_dim=config[\"visual_lstm_hidden_dim\"],\n",
+    "            num_layers=config[\"visual_lstm_layers\"],\n",
     "            finetune=config[\"resnet_finetune\"],\n",
-    "            bidirectional=config[\"visual_bidirectional\"],\n",
+    "            bidirectional=config[\"visual_lstm_bidirectional\"],\n",
     "        )\n",
     "        self.co_attn_layers = nn.ModuleList([\n",
     "            CoAttentionLayer(\n",
@@ -1421,7 +1432,7 @@
     "                dropout=config[\"co_attn_dropout\"],\n",
     "            )\n",
     "            for _ in range(config[\"co_attn_layers\"])\n",
-    "])\n",
+    "        ])\n",
     "\n",
     "        self.classifier = nn.Sequential(\n",
     "            nn.LayerNorm(config[\"fusion_input_dim\"]),\n",
@@ -1439,7 +1450,9 @@
     "        for layer in self.co_attn_layers:\n",
     "            text_feats, image_feats = layer(text_feats, image_feats, text_pad_mask=text_pad_mask)\n",
     "\n",
-    "        if text_pad_mask is not None:\n",
+    "        if self.text_pooling == \"cls_token\":\n",
+    "            text_pool = text_feats[:, 0, :]\n",
+    "        elif text_pad_mask is not None:\n",
     "            valid_mask = (~text_pad_mask).float().unsqueeze(-1)\n",
     "            text_pool = (text_feats * valid_mask).sum(1) / valid_mask.sum(1).clamp(min=1.0)\n",
     "        else:\n",
@@ -1477,8 +1490,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
-   "id": "58c3d54b",
+   "execution_count": 30,
+   "id": "1e87a8eb",
    "metadata": {},
    "outputs": [
     {
@@ -1493,12 +1506,12 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "43c3dac8356b4dadb73bf7091d7db8d9",
+       "model_id": "6fbcb7a8f3824a0dae71e81ce7cedcf0",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  1/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  1/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1508,18 +1521,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    1      0.9434     0.6067    0.8928   0.6741   0.6028   1.98e-04  best saved\n"
+      "    1      0.9374     0.6073    0.8937   0.6519   0.5706   9.97e-05  best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "8a45c025120b4a8d85a645e40425bd6e",
+       "model_id": "917f4453ebbb4df6b95c863e74637c3d",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  2/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  2/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1529,18 +1542,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    2      0.6155     0.7791    0.9984   0.7095   0.6080   1.91e-04  best saved\n"
+      "    2      0.6327     0.7694    0.8820   0.7184   0.6393   9.89e-05  best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "6b174ed1807043b994ce5d55231a5230",
+       "model_id": "7f67f205bab946dcb859e3aa04e13376",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  3/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  3/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1550,18 +1563,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    3      0.3924     0.8725    1.0571   0.6918   0.6082   1.81e-04  best saved\n"
+      "    3      0.3671     0.8817    1.0438   0.6940   0.6403   9.76e-05  best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "62e59101d46b4eb8bfb769985f4de5db",
+       "model_id": "61ddda447c804d1781698f425803e687",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  4/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  4/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1571,18 +1584,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    4      0.2445     0.9332    1.4822   0.7051   0.6058   1.67e-04  \n"
+      "    4      0.2327     0.9351    1.5304   0.6874   0.6013   9.57e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5c4f326c5d62408585f629b9e00967fd",
+       "model_id": "0a3dfbcc004940548edb795d72fcf082",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  5/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  5/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1592,18 +1605,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    5      0.1683     0.9590    2.2861   0.7273   0.6268   1.50e-04  best saved\n"
+      "    5      0.1890     0.9570    2.0917   0.6918   0.5740   9.34e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "a059512506034ade9dab8ee40cf63db4",
+       "model_id": "6514318110fa4f6d91535124f9b3a788",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  6/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  6/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1613,18 +1626,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    6      0.1341     0.9726    2.2299   0.7251   0.6368   1.31e-04  best saved\n"
+      "    6      0.1618     0.9656    1.9916   0.7007   0.6106   9.05e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "c2cd7be0b0a546a788974b7585b31196",
+       "model_id": "b73a6865dd4b423c8a5ac437e3d7abc4",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  7/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  7/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1634,60 +1647,18 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    7      0.1019     0.9831    2.2547   0.7118   0.6111   1.11e-04  \n"
+      "    7      0.1337     0.9759    2.2080   0.7007   0.6004   8.73e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "53a6597628e04ca49646fadc4c6aad9f",
+       "model_id": "720512c27b4a4a83adf59ebdd297d26a",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Epoch  8/15:   0%|          | 0/226 [00:00<?, ?it/s]"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "    8      0.0712     0.9859    2.9322   0.6962   0.5949   9.01e-05  \n"
-     ]
-    },
-    {
-     "data": {
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "2eaf13dfd04b4dfd846f6ba4f6a84bee",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "Epoch  9/15:   0%|          | 0/226 [00:00<?, ?it/s]"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "    9      0.0470     0.9889    2.8228   0.7118   0.6099   6.98e-05  \n"
-     ]
-    },
-    {
-     "data": {
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "593427f6f72f4e3e84ab5739bc5616d7",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "Epoch 10/15:   0%|          | 0/226 [00:00<?, ?it/s]"
+       "Epoch  8/30:   0%|          | 0/226 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -1698,10 +1669,10 @@
      "output_type": "stream",
      "text": [
       "\n",
-      "Early stopping at epoch 10 (no improvement for 4 epochs)\n",
+      "Early stopping at epoch 8 (no improvement for 5 epochs)\n",
       "\n",
-      "Training complete. Best val macro-F1: 0.6368\n",
-      "Best checkpoint path: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_bilstm_checkpoints/bert_bilstm_best.pt\n"
+      "Training complete. Best val macro-F1: 0.6403\n",
+      "Best checkpoint path: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_lstm_checkpoints/bert_lstm_best.pt\n"
      ]
     }
    ],
@@ -1719,7 +1690,7 @@
     "\n",
     "optimizer = AdamW([\n",
     "    {\"params\": main_params, \"lr\": CONFIG[\"lr_main\"]},\n",
-    "    {\"params\": bert_params, \"lr\": CONFIG[\"lr_bert\"]},\n",
+    "    {\"params\": bert_params, \"lr\": CONFIG[\"lr_bert_finetune\"]},\n",
     "    {\"params\": resnet_params, \"lr\": CONFIG[\"lr_resnet_finetune\"]},\n",
     "], weight_decay=CONFIG[\"weight_decay\"])\n",
     "\n",
@@ -1729,7 +1700,7 @@
     "    class_weight=\"balanced\",\n",
     "    classes=np.arange(CONFIG[\"num_classes\"]),\n",
     "    y=df_train[\"label\"].values,\n",
-    " )\n",
+    ")\n",
     "class_weights = torch.tensor(cw, dtype=torch.float).to(device)\n",
     "criterion = nn.CrossEntropyLoss(weight=class_weights)\n",
     "print(f\"Class weights - negative={cw[0]:.3f}  neutral={cw[1]:.3f}  positive={cw[2]:.3f}\")\n",
@@ -1759,7 +1730,7 @@
     "\n",
     "best_val_f1 = 0.0\n",
     "patience_counter = 0\n",
-    "best_ckpt_path = os.path.join(CONFIG[\"checkpoint_dir\"], \"bert_bilstm_best.pt\")\n",
+    "best_ckpt_path = os.path.join(CONFIG[\"checkpoint_dir\"], \"bert_lstm_best.pt\")\n",
     "history = []\n",
     "\n",
     "header = (\n",
@@ -1815,7 +1786,7 @@
     "            \"config\": CONFIG,\n",
     "            \"label_map\": LABEL_MAP,\n",
     "            \"label_imap\": LABEL_IMAP,\n",
-    "            \"tokenizer_name\": CONFIG[\"bert_model_name\"],\n",
+    "            \"tokenizer_name\": CONFIG[\"bert_model\"],\n",
     "        }, best_ckpt_path)\n",
     "        status = \"best saved\"\n",
     "    else:\n",
@@ -1844,22 +1815,22 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
-   "id": "3b8dfbdc",
+   "execution_count": 31,
+   "id": "e5adb89c",
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Loading best checkpoint: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_bilstm_checkpoints/bert_bilstm_best.pt\n",
-      "Checkpoint epoch: 6  val_f1=0.6368  val_acc=0.7251\n"
+      "Loading best checkpoint: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_lstm_checkpoints/bert_lstm_best.pt\n",
+      "Checkpoint epoch: 3  val_f1=0.6403  val_acc=0.6940\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0beefcf521b94d25b4a56eb1c5b11fcc",
+       "model_id": "1e1157a345b6420581595eadec47913f",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1876,42 +1847,42 @@
      "text": [
       "\n",
       "==============================================================\n",
-      "  Test Set Results - Multimodal BERT + Visual BiLSTM\n",
+      "  Test Set Results - Multimodal BERT + ResNet50-LSTM\n",
       "==============================================================\n",
-      "  Accuracy  (overall)    : 0.7235  (72.35%)\n",
-      "  Macro F1  (unweighted) : 0.6361\n",
+      "  Accuracy  (overall)    : 0.7522  (75.22%)\n",
+      "  Macro F1  (unweighted) : 0.6733\n",
       "\n",
       "  Per-Class Classification Report:\n",
       "              precision    recall  f1-score   support\n",
       "\n",
-      "    negative     0.6444    0.6397    0.6421       136\n",
-      "     neutral     0.6000    0.3830    0.4675        47\n",
-      "    positive     0.7735    0.8253    0.7986       269\n",
+      "    negative     0.6871    0.7426    0.7138       136\n",
+      "     neutral     0.5116    0.4681    0.4889        47\n",
+      "    positive     0.8282    0.8067    0.8173       269\n",
       "\n",
-      "    accuracy                         0.7235       452\n",
-      "   macro avg     0.6727    0.6160    0.6361       452\n",
-      "weighted avg     0.7166    0.7235    0.7171       452\n",
+      "    accuracy                         0.7522       452\n",
+      "   macro avg     0.6756    0.6725    0.6733       452\n",
+      "weighted avg     0.7528    0.7522    0.7520       452\n",
       "\n",
       "  Confusion Matrix (rows=true, cols=pred):\n",
       "              negative     neutral    positive\n",
-      "    negative          87           4          45\n",
-      "     neutral           9          18          20\n",
-      "    positive          39           8         222\n",
+      "    negative         101           6          29\n",
+      "     neutral           9          22          16\n",
+      "    positive          37          15         217\n",
       "\n",
       "  Training History (last 5 epochs):\n",
       " epoch  train_loss  train_acc  val_loss  val_acc   val_f1\n",
-      "     5    0.168282   0.958980  2.286052 0.727273 0.626818\n",
-      "     6    0.134116   0.972561  2.229947 0.725055 0.636774\n",
-      "     7    0.101898   0.983093  2.254702 0.711752 0.611124\n",
-      "     8    0.071165   0.985865  2.932185 0.696231 0.594912\n",
-      "     9    0.046957   0.988914  2.822762 0.711752 0.609945\n",
+      "     3    0.367052   0.881652  1.043791 0.694013 0.640254\n",
+      "     4    0.232679   0.935144  1.530369 0.687361 0.601327\n",
+      "     5    0.188980   0.957040  2.091659 0.691796 0.573971\n",
+      "     6    0.161835   0.965632  1.991649 0.700665 0.610605\n",
+      "     7    0.133704   0.975887  2.208046 0.700665 0.600411\n",
       "\n",
       "==============================================================\n",
-      "  bert_bilstm_full.pt                  1568.7 MB\n",
-      "  bert_bilstm_weights_only.pt          524.6 MB\n",
+      "  bert_lstm_full.pt                    1576.2 MB\n",
+      "  bert_lstm_weights_only.pt            527.1 MB\n",
       "  config.json                          0.0 MB\n",
       "\n",
-      "Artifacts saved to: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_bilstm_final\n",
+      "Artifacts saved to: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bert_lstm_final\n",
       "==============================================================\n"
      ]
     }
@@ -1950,7 +1921,7 @@
     "\n",
     "SEP = \"=\" * 62\n",
     "print(f\"\\n{SEP}\")\n",
-    "print(\"  Test Set Results - Multimodal BERT + Visual BiLSTM\")\n",
+    "print(\"  Test Set Results - Multimodal BERT + ResNet50-LSTM\")\n",
     "print(SEP)\n",
     "print(f\"  Accuracy  (overall)    : {test_acc:.4f}  ({test_acc * 100:.2f}%)\")\n",
     "print(f\"  Macro F1  (unweighted) : {test_f1:.4f}\")\n",
@@ -1994,9 +1965,9 @@
     "    \"test_acc\": test_acc,\n",
     "    \"test_f1\": test_f1,\n",
     "    \"history\": history,\n",
-    "}, os.path.join(SAVE_DIR, \"bert_bilstm_full.pt\"))\n",
+    "}, os.path.join(SAVE_DIR, \"bert_lstm_full.pt\"))\n",
     "\n",
-    "torch.save(model.state_dict(), os.path.join(SAVE_DIR, \"bert_bilstm_weights_only.pt\"))\n",
+    "torch.save(model.state_dict(), os.path.join(SAVE_DIR, \"bert_lstm_weights_only.pt\"))\n",
     "tokenizer.save_pretrained(SAVE_DIR)\n",
     "\n",
     "cfg_json = {k: v for k, v in CONFIG.items() if not callable(v)}\n",
@@ -2005,7 +1976,7 @@
     "with open(os.path.join(SAVE_DIR, \"config.json\"), \"w\") as f:\n",
     "    json.dump(cfg_json, f, indent=2)\n",
     "\n",
-    "for fname in [\"bert_bilstm_full.pt\", \"bert_bilstm_weights_only.pt\", \"config.json\"]:\n",
+    "for fname in [\"bert_lstm_full.pt\", \"bert_lstm_weights_only.pt\", \"config.json\"]:\n",
     "    fpath = os.path.join(SAVE_DIR, fname)\n",
     "    mb = os.path.getsize(fpath) / (1024 * 1024)\n",
     "    print(f\"  {fname:<35}  {mb:.1f} MB\")\n",

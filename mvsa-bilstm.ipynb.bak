@@ -82,7 +82,7 @@
      "data": {
       "text/html": [
        "\n",
-       "  <div id=\"df-dd37d2cd-b0c6-4494-8b83-c4a0bb625c30\" class=\"colab-df-container\">\n",
+       "  <div id=\"df-5053704d-18a1-4eff-9029-bec300b6015e\" class=\"colab-df-container\">\n",
        "    <div>\n",
        "<style scoped>\n",
        "    .dataframe tbody tr th:only-of-type {\n",
@@ -161,7 +161,7 @@
        "    <div class=\"colab-df-buttons\">\n",
        "      \n",
        "  <div class=\"colab-df-container\">\n",
-       "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-dd37d2cd-b0c6-4494-8b83-c4a0bb625c30')\"\n",
+       "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-5053704d-18a1-4eff-9029-bec300b6015e')\"\n",
        "            title=\"Convert this dataframe to an interactive table.\"\n",
        "            style=\"display:none;\">\n",
        "      \n",
@@ -213,12 +213,12 @@
        "\n",
        "    <script>\n",
        "      const buttonEl =\n",
-       "        document.querySelector('#df-dd37d2cd-b0c6-4494-8b83-c4a0bb625c30 button.colab-df-convert');\n",
+       "        document.querySelector('#df-5053704d-18a1-4eff-9029-bec300b6015e button.colab-df-convert');\n",
        "      buttonEl.style.display =\n",
        "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
        "\n",
        "      async function convertToInteractive(key) {\n",
-       "        const element = document.querySelector('#df-dd37d2cd-b0c6-4494-8b83-c4a0bb625c30');\n",
+       "        const element = document.querySelector('#df-5053704d-18a1-4eff-9029-bec300b6015e');\n",
        "        const dataTable =\n",
        "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
        "                                                    [key], {});\n",
@@ -453,58 +453,64 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "==============================================================\n",
-      "   Multimodal LSTM + Co-Attention Sentiment — Configuration\n",
-      "==============================================================\n",
-      "  Device                  : CUDA\n",
-      "  GPU                     : Tesla T4\n",
+      "==================================================================\n",
+      "  Multimodal BiLSTM + Co-Attention Sentiment — Configuration\n",
+      "==================================================================\n",
+      "  Device                    : CUDA\n",
+      "  GPU                       : Tesla T4\n",
       "\n",
-      "  ── Text Encoder (GloVe + LSTM) ──────────────────────\n",
-      "  Embedding dim           : 300  (GloVe 6B)\n",
-      "  GloVe fine-tune         : True\n",
-      "  LSTM direction          : Unidirectional\n",
-      "  Hidden dim              : 256  → output 256\n",
-      "  LSTM layers             : 2\n",
-      "  Max sequence length     : 50\n",
+      "  ── Text Encoder (GloVe + BiLSTM) ──────────────────────\n",
+      "  Embedding dim             : 300  (GloVe 6B 300d)\n",
+      "  GloVe fine-tune           : True\n",
+      "  LSTM direction            : Bidirectional\n",
+      "  Hidden dim (per direction): 256  → output 512\n",
+      "  LSTM layers               : 2\n",
+      "  Max sequence length       : 50\n",
       "\n",
-      "  ── Image Encoder (ResNet50 + LSTM) ──────────────────\n",
-      "  Backbone                : resnet50 (pretrained ImageNet)\n",
-      "  Feature dim (raw)       : 2048\n",
-      "  Projected dim           : 256\n",
-      "  Input image size        : 224×224\n",
-      "  ResNet fine-tune        : True\n",
-      "  LSTM direction          : Unidirectional\n",
+      "  ── Image Encoder (ResNet50 + BiLSTM) ──────────────────\n",
+      "  Backbone                  : resnet50 (pretrained ImageNet)\n",
+      "  Feature dim (raw)         : 2048\n",
+      "  Projected dim             : 512\n",
+      "  Input image size          : 224×224\n",
+      "  ResNet fine-tune          : True\n",
+      "  LSTM direction            : Bidirectional\n",
       "\n",
-      "  ── Co-Attention Mechanism ───────────────────────────\n",
-      "  Type                    : multi-head (bidirectional cross-modal)\n",
-      "  Number of heads         : 8\n",
-      "  Number of layers        : 2\n",
-      "  d_model                 : 256  (= hidden_dim, Unidirectional)\n",
-      "  Head dimension          : 32  (d_model / num_heads)\n",
-      "  FFN hidden dim          : 1024\n",
-      "  Dropout                 : 0.1\n",
+      "  ── Co-Attention Mechanism ─────────────────────────────\n",
+      "  Attention style           : Multi-head (8 heads)\n",
+      "  Architecture              : Bidirectional cross-modal\n",
+      "                              (Text→Image & Image→Text)\n",
+      "  Number of layers          : 2\n",
+      "  d_model                   : 512  (hidden × 2 because Bidirectional)\n",
+      "  Head dimension            : 64  (d_model / num_heads)\n",
+      "  FFN hidden dim            : 2048  (4 × d_model)\n",
+      "  Dropout                   : 0.1\n",
       "\n",
-      "  ── Fusion & Classifier ──────────────────────────────\n",
-      "  Fusion strategy         : concatenation\n",
-      "  Fusion input dim        : 512\n",
-      "  Classifier hidden       : 256\n",
-      "  Num output classes      : 3  (neg / neu / pos)\n",
-      "  Classifier dropout      : 0.3\n",
+      "  ── Fusion & Classifier ────────────────────────────────\n",
+      "  Fusion strategy           : concatenation\n",
+      "  Fusion input dim          : 1024  (d_model × 2 modalities)\n",
+      "  Classifier hidden         : 256\n",
+      "  Num output classes        : 3  (negative / neutral / positive)\n",
+      "  Classifier dropout        : 0.3\n",
       "\n",
-      "  ── Training Hyperparameters ─────────────────────────\n",
-      "  Epochs                  : 30\n",
-      "  Batch size              : 32\n",
-      "  LR (main)               : 0.0001\n",
-      "  LR (ResNet fine-tune)   : 1e-05\n",
-      "  Weight decay            : 0.0001\n",
-      "  Gradient clip           : 1.0\n",
-      "  LR scheduler            : CosineAnnealingLR\n",
-      "  Early-stop patience     : 5 epochs\n",
+      "  ── Training Hyperparameters ───────────────────────────\n",
+      "  Epochs                    : 30\n",
+      "  Batch size                : 32\n",
+      "  LR (BiLSTM / CoAttn / clf): 0.0001\n",
+      "  LR (ResNet fine-tune)     : 1e-05\n",
+      "  Weight decay              : 0.0001\n",
+      "  Gradient clip             : 1.0\n",
+      "  LR scheduler              : CosineAnnealingLR\n",
+      "  Early-stop patience       : 5 epochs\n",
+      "  Class loss weighting      : balanced (sklearn compute_class_weight)\n",
       "\n",
-      "  ── Data ─────────────────────────────────────────────\n",
-      "  Split (train/val/test)  : 0.8/0.1/0.1\n",
-      "  Random seed             : 42\n",
-      "==============================================================\n"
+      "  ── Data ───────────────────────────────────────────────\n",
+      "  Format                    : Parquet (fast I/O, pre-processed)\n",
+      "  Fields used               : text_content, image_bytes,\n",
+      "                              text_sentiment, image_sentiment,\n",
+      "                              final_sentiment  ← label target\n",
+      "  Split (train/val/test)    : 0.8/0.1/0.1  (stratified)\n",
+      "  Random seed               : 42\n",
+      "==================================================================\n"
      ]
     }
    ],
@@ -516,46 +522,46 @@
     "CONFIG = {\n",
     "    # ── Paths ──────────────────────────────────────────────────────\n",
     "    \"parquet_path\"       : \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/mvsa_single_processed.parquet\",\n",
-    "    \"checkpoint_dir\"     : \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/lstm_checkpoints\",\n",
+    "    \"checkpoint_dir\"     : \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bilstm_checkpoints\",\n",
     "    \"glove_path\"         : \"/content/drive/MyDrive/Colab Notebooks/glove.6B.300d.txt\",\n",
     "\n",
-    "    # ── Text Encoder (GloVe + LSTM) ────────────────────────────────\n",
-    "    \"embed_dim\"          : 300,          # GloVe 6B 300d\n",
-    "    \"glove_finetune\"     : True,         # fine-tune embeddings during training\n",
-    "    \"hidden_dim\"         : 256,          # LSTM hidden units per direction\n",
+    "    # ── Text Encoder (GloVe + BiLSTM) ──────────────────────────────\n",
+    "    \"embed_dim\"          : 300,         # GloVe 6B 300d\n",
+    "    \"glove_finetune\"     : True,        # fine-tune embeddings during training\n",
+    "    \"hidden_dim\"         : 256,         # BiLSTM hidden units per direction\n",
     "    \"num_lstm_layers\"    : 2,\n",
-    "    \"bidirectional\"      : False,        # Unidirectional LSTM; output dim = hidden_dim = 256\n",
+    "    \"bidirectional\"      : True,        # BiLSTM: output dim = hidden_dim × 2 = 512\n",
     "    \"max_seq_len\"        : 50,\n",
     "\n",
-    "    # ── Image Encoder (ResNet50 + LSTM) ────────────────────────────\n",
+    "    # ── Image Encoder (ResNet50 + BiLSTM) ──────────────────────────\n",
     "    \"image_backbone\"     : \"resnet50\",\n",
-    "    \"image_feature_dim\"  : 2048,         # ResNet50 last conv channels\n",
-    "    \"image_proj_dim\"     : 256,          # project 2048 → 256  (= d_model)\n",
+    "    \"image_feature_dim\"  : 2048,        # ResNet50 last conv channels\n",
+    "    \"image_proj_dim\"     : 512,         # project 2048 → 512 to match d_model\n",
     "    \"image_input_size\"   : 224,\n",
-    "    \"resnet_finetune\"    : True,         # fine-tune all ResNet layers\n",
+    "    \"resnet_finetune\"    : True,        # fine-tune all ResNet layers\n",
     "\n",
     "    # ── d_model (shared dim for co-attention) ──────────────────────\n",
-    "    # d_model = hidden_dim × 1 (unidirectional) = 256\n",
-    "    \"d_model\"            : 256,\n",
+    "    # d_model = hidden_dim × 2 (bidirectional) = 256 × 2 = 512\n",
+    "    \"d_model\"            : 512,\n",
     "\n",
     "    # ── Co-Attention ───────────────────────────────────────────────\n",
     "    \"co_attn_type\"       : \"multi-head\",        # bidirectional cross-attention\n",
-    "    \"num_heads\"          : 8,            # MHA heads  (256 / 8 = 32 per head)\n",
+    "    \"num_heads\"          : 8,            # MHA heads  (512 / 8 = 64 per head)\n",
     "    \"co_attn_layers\"     : 2,\n",
-    "    \"co_attn_ffn_dim\"    : 1024,         # FFN inner dim (4 × d_model)\n",
+    "    \"co_attn_ffn_dim\"    : 2048,         # FFN inner dim (4 × d_model)\n",
     "    \"co_attn_dropout\"    : 0.1,\n",
     "\n",
     "    # ── Fusion & Classifier ────────────────────────────────────────\n",
     "    \"fusion_strategy\"    : \"concatenation\",     # cat(mean_text, mean_image)\n",
-    "    \"fusion_input_dim\"   : 256 * 2,      # 512\n",
+    "    \"fusion_input_dim\"   : 512 * 2,      # 1024\n",
     "    \"classifier_hidden\"  : 256,\n",
     "    \"num_classes\"        : 3,            # negative=0 / neutral=1 / positive=2\n",
     "    \"classifier_dropout\" : 0.3,\n",
     "\n",
     "    # ── Training ────────────────────────────────────────────────────\n",
-    "    \"epochs\"             : 20,\n",
-    "    \"batch_size\"         : 16,\n",
-    "    \"lr_main\"            : 1e-4,         # LSTM, CoAttn, classifier\n",
+    "    \"epochs\"             : 30,\n",
+    "    \"batch_size\"         : 32,\n",
+    "    \"lr_main\"            : 1e-4,         # BiLSTM, CoAttn, classifier\n",
     "    \"lr_resnet_finetune\" : 1e-5,         # ResNet50 backbone\n",
     "    \"weight_decay\"       : 1e-4,\n",
     "    \"gradient_clip\"      : 1.0,\n",
@@ -585,61 +591,67 @@
     "os.makedirs(CONFIG[\"checkpoint_dir\"], exist_ok=True)\n",
     "\n",
     "# ── Pretty-print configuration ───────────────────────────────────────\n",
-    "SEP = \"=\" * 62\n",
+    "SEP = \"=\" * 66\n",
     "print(SEP)\n",
-    "print(\"   Multimodal LSTM + Co-Attention Sentiment — Configuration\")\n",
+    "print(\"  Multimodal BiLSTM + Co-Attention Sentiment — Configuration\")\n",
     "print(SEP)\n",
-    "print(f\"  Device                  : {CONFIG['device'].upper()}\")\n",
+    "print(f\"  Device                    : {CONFIG['device'].upper()}\")\n",
     "if torch.cuda.is_available():\n",
-    "    print(f\"  GPU                     : {torch.cuda.get_device_name(0)}\")\n",
+    "    print(f\"  GPU                       : {torch.cuda.get_device_name(0)}\")\n",
     "\n",
     "_dir = \"Bidirectional\" if CONFIG[\"bidirectional\"] else \"Unidirectional\"\n",
     "_out = CONFIG[\"hidden_dim\"] * (2 if CONFIG[\"bidirectional\"] else 1)\n",
-    "print(f\"\\n  ── Text Encoder (GloVe + LSTM) ──────────────────────\")\n",
-    "print(f\"  Embedding dim           : {CONFIG['embed_dim']}  (GloVe 6B)\")\n",
-    "print(f\"  GloVe fine-tune         : {CONFIG['glove_finetune']}\")\n",
-    "print(f\"  LSTM direction          : {_dir}\")\n",
-    "print(f\"  Hidden dim              : {CONFIG['hidden_dim']}  → output {_out}\")\n",
-    "print(f\"  LSTM layers             : {CONFIG['num_lstm_layers']}\")\n",
-    "print(f\"  Max sequence length     : {CONFIG['max_seq_len']}\")\n",
+    "print(f\"\\n  ── Text Encoder (GloVe + BiLSTM) ──────────────────────\")\n",
+    "print(f\"  Embedding dim             : {CONFIG['embed_dim']}  (GloVe 6B 300d)\")\n",
+    "print(f\"  GloVe fine-tune           : {CONFIG['glove_finetune']}\")\n",
+    "print(f\"  LSTM direction            : {_dir}\")\n",
+    "print(f\"  Hidden dim (per direction): {CONFIG['hidden_dim']}  → output {_out}\")\n",
+    "print(f\"  LSTM layers               : {CONFIG['num_lstm_layers']}\")\n",
+    "print(f\"  Max sequence length       : {CONFIG['max_seq_len']}\")\n",
     "\n",
-    "print(f\"\\n  ── Image Encoder (ResNet50 + LSTM) ──────────────────\")\n",
-    "print(f\"  Backbone                : {CONFIG['image_backbone']} (pretrained ImageNet)\")\n",
-    "print(f\"  Feature dim (raw)       : {CONFIG['image_feature_dim']}\")\n",
-    "print(f\"  Projected dim           : {CONFIG['image_proj_dim']}\")\n",
-    "print(f\"  Input image size        : {CONFIG['image_input_size']}×{CONFIG['image_input_size']}\")\n",
-    "print(f\"  ResNet fine-tune        : {CONFIG['resnet_finetune']}\")\n",
-    "print(f\"  LSTM direction          : {_dir}\")\n",
+    "print(f\"\\n  ── Image Encoder (ResNet50 + BiLSTM) ──────────────────\")\n",
+    "print(f\"  Backbone                  : {CONFIG['image_backbone']} (pretrained ImageNet)\")\n",
+    "print(f\"  Feature dim (raw)         : {CONFIG['image_feature_dim']}\")\n",
+    "print(f\"  Projected dim             : {CONFIG['image_proj_dim']}\")\n",
+    "print(f\"  Input image size          : {CONFIG['image_input_size']}×{CONFIG['image_input_size']}\")\n",
+    "print(f\"  ResNet fine-tune          : {CONFIG['resnet_finetune']}\")\n",
+    "print(f\"  LSTM direction            : {_dir}\")\n",
     "\n",
-    "print(f\"\\n  ── Co-Attention Mechanism ───────────────────────────\")\n",
-    "print(f\"  Type                    : {CONFIG['co_attn_type']} (bidirectional cross-modal)\")\n",
-    "print(f\"  Number of heads         : {CONFIG['num_heads']}\")\n",
-    "print(f\"  Number of layers        : {CONFIG['co_attn_layers']}\")\n",
-    "print(f\"  d_model                 : {CONFIG['d_model']}  (= hidden_dim, {_dir})\")\n",
-    "print(f\"  Head dimension          : {CONFIG['d_model'] // CONFIG['num_heads']}  (d_model / num_heads)\")\n",
-    "print(f\"  FFN hidden dim          : {CONFIG['co_attn_ffn_dim']}\")\n",
-    "print(f\"  Dropout                 : {CONFIG['co_attn_dropout']}\")\n",
+    "print(f\"\\n  ── Co-Attention Mechanism ─────────────────────────────\")\n",
+    "print(f\"  Attention style           : {CONFIG['co_attn_type'].capitalize()} ({CONFIG['num_heads']} heads)\")\n",
+    "print(f\"  Architecture              : Bidirectional cross-modal\")\n",
+    "print(f\"                              (Text→Image & Image→Text)\")\n",
+    "print(f\"  Number of layers          : {CONFIG['co_attn_layers']}\")\n",
+    "print(f\"  d_model                   : {CONFIG['d_model']}  (hidden × 2 because {_dir})\")\n",
+    "print(f\"  Head dimension            : {CONFIG['d_model'] // CONFIG['num_heads']}  (d_model / num_heads)\")\n",
+    "print(f\"  FFN hidden dim            : {CONFIG['co_attn_ffn_dim']}  (4 × d_model)\")\n",
+    "print(f\"  Dropout                   : {CONFIG['co_attn_dropout']}\")\n",
     "\n",
-    "print(f\"\\n  ── Fusion & Classifier ──────────────────────────────\")\n",
-    "print(f\"  Fusion strategy         : {CONFIG['fusion_strategy']}\")\n",
-    "print(f\"  Fusion input dim        : {CONFIG['fusion_input_dim']}\")\n",
-    "print(f\"  Classifier hidden       : {CONFIG['classifier_hidden']}\")\n",
-    "print(f\"  Num output classes      : {CONFIG['num_classes']}  (neg / neu / pos)\")\n",
-    "print(f\"  Classifier dropout      : {CONFIG['classifier_dropout']}\")\n",
+    "print(f\"\\n  ── Fusion & Classifier ────────────────────────────────\")\n",
+    "print(f\"  Fusion strategy           : {CONFIG['fusion_strategy']}\")\n",
+    "print(f\"  Fusion input dim          : {CONFIG['fusion_input_dim']}  (d_model × 2 modalities)\")\n",
+    "print(f\"  Classifier hidden         : {CONFIG['classifier_hidden']}\")\n",
+    "print(f\"  Num output classes        : {CONFIG['num_classes']}  (negative / neutral / positive)\")\n",
+    "print(f\"  Classifier dropout        : {CONFIG['classifier_dropout']}\")\n",
     "\n",
-    "print(f\"\\n  ── Training Hyperparameters ─────────────────────────\")\n",
-    "print(f\"  Epochs                  : {CONFIG['epochs']}\")\n",
-    "print(f\"  Batch size              : {CONFIG['batch_size']}\")\n",
-    "print(f\"  LR (main)               : {CONFIG['lr_main']}\")\n",
-    "print(f\"  LR (ResNet fine-tune)   : {CONFIG['lr_resnet_finetune']}\")\n",
-    "print(f\"  Weight decay            : {CONFIG['weight_decay']}\")\n",
-    "print(f\"  Gradient clip           : {CONFIG['gradient_clip']}\")\n",
-    "print(f\"  LR scheduler            : {CONFIG['scheduler']}\")\n",
-    "print(f\"  Early-stop patience     : {CONFIG['early_stop_patience']} epochs\")\n",
+    "print(f\"\\n  ── Training Hyperparameters ───────────────────────────\")\n",
+    "print(f\"  Epochs                    : {CONFIG['epochs']}\")\n",
+    "print(f\"  Batch size                : {CONFIG['batch_size']}\")\n",
+    "print(f\"  LR (BiLSTM / CoAttn / clf): {CONFIG['lr_main']}\")\n",
+    "print(f\"  LR (ResNet fine-tune)     : {CONFIG['lr_resnet_finetune']}\")\n",
+    "print(f\"  Weight decay              : {CONFIG['weight_decay']}\")\n",
+    "print(f\"  Gradient clip             : {CONFIG['gradient_clip']}\")\n",
+    "print(f\"  LR scheduler              : {CONFIG['scheduler']}\")\n",
+    "print(f\"  Early-stop patience       : {CONFIG['early_stop_patience']} epochs\")\n",
+    "print(f\"  Class loss weighting      : balanced (sklearn compute_class_weight)\")\n",
     "\n",
-    "print(f\"\\n  ── Data ─────────────────────────────────────────────\")\n",
-    "print(f\"  Split (train/val/test)  : {CONFIG['train_ratio']}/{CONFIG['val_ratio']}/{CONFIG['test_ratio']}\")\n",
-    "print(f\"  Random seed             : {CONFIG['seed']}\")\n",
+    "print(f\"\\n  ── Data ───────────────────────────────────────────────\")\n",
+    "print(f\"  Format                    : Parquet (fast I/O, pre-processed)\")\n",
+    "print(f\"  Fields used               : text_content, image_bytes,\")\n",
+    "print(f\"                              text_sentiment, image_sentiment,\")\n",
+    "print(f\"                              final_sentiment  ← label target\")\n",
+    "print(f\"  Split (train/val/test)    : {CONFIG['train_ratio']}/{CONFIG['val_ratio']}/{CONFIG['test_ratio']}  (stratified)\")\n",
+    "print(f\"  Random seed               : {CONFIG['seed']}\")\n",
     "print(SEP)\n"
    ]
   },
@@ -675,7 +687,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "2a57c3e68c0d4ccda4bf205eab786a13",
+       "model_id": "f54bd1252cfa4a5e9019310e8315c834",
        "version_major": 2,
        "version_minor": 0
       },
@@ -964,9 +976,9 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Total parameters    : 30,733,251\n",
-      "Trainable parameters: 30,733,251\n",
-      "Forward pass OK  |  logits shape: (32, 3)  (expect [B, 3])\n"
+      "Total parameters    : 44,564,163\n",
+      "Trainable parameters: 44,564,163\n",
+      "Forward pass OK  |  logits shape: (32, 3)  (expect [32, 3])\n"
      ]
     },
     {
@@ -975,7 +987,7 @@
        "MultimodalSentimentModel(\n",
        "  (text_encoder): TextEncoder(\n",
        "    (embedding): Embedding(4192, 300, padding_idx=0)\n",
-       "    (lstm): LSTM(300, 256, num_layers=2, batch_first=True, dropout=0.3)\n",
+       "    (lstm): LSTM(300, 256, num_layers=2, batch_first=True, dropout=0.3, bidirectional=True)\n",
        "  )\n",
        "  (image_encoder): ImageEncoder(\n",
        "    (backbone): Sequential(\n",
@@ -1153,42 +1165,42 @@
        "      )\n",
        "    )\n",
        "    (proj): Sequential(\n",
-       "      (0): Linear(in_features=2048, out_features=256, bias=True)\n",
-       "      (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
+       "      (0): Linear(in_features=2048, out_features=512, bias=True)\n",
+       "      (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
        "    )\n",
-       "    (lstm): LSTM(256, 256, num_layers=2, batch_first=True, dropout=0.3)\n",
+       "    (lstm): LSTM(512, 256, num_layers=2, batch_first=True, dropout=0.3, bidirectional=True)\n",
        "  )\n",
        "  (co_attn_layers): ModuleList(\n",
        "    (0-1): 2 x CoAttentionLayer(\n",
        "      (t2i_attn): MultiheadAttention(\n",
-       "        (out_proj): NonDynamicallyQuantizableLinear(in_features=256, out_features=256, bias=True)\n",
+       "        (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)\n",
        "      )\n",
-       "      (t2i_norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
+       "      (t2i_norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
        "      (t2i_ffn): Sequential(\n",
-       "        (0): Linear(in_features=256, out_features=1024, bias=True)\n",
+       "        (0): Linear(in_features=512, out_features=2048, bias=True)\n",
        "        (1): GELU(approximate='none')\n",
        "        (2): Dropout(p=0.1, inplace=False)\n",
-       "        (3): Linear(in_features=1024, out_features=256, bias=True)\n",
+       "        (3): Linear(in_features=2048, out_features=512, bias=True)\n",
        "        (4): Dropout(p=0.1, inplace=False)\n",
        "      )\n",
-       "      (t2i_norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
+       "      (t2i_norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
        "      (i2t_attn): MultiheadAttention(\n",
-       "        (out_proj): NonDynamicallyQuantizableLinear(in_features=256, out_features=256, bias=True)\n",
+       "        (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)\n",
        "      )\n",
-       "      (i2t_norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
+       "      (i2t_norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
        "      (i2t_ffn): Sequential(\n",
-       "        (0): Linear(in_features=256, out_features=1024, bias=True)\n",
+       "        (0): Linear(in_features=512, out_features=2048, bias=True)\n",
        "        (1): GELU(approximate='none')\n",
        "        (2): Dropout(p=0.1, inplace=False)\n",
-       "        (3): Linear(in_features=1024, out_features=256, bias=True)\n",
+       "        (3): Linear(in_features=2048, out_features=512, bias=True)\n",
        "        (4): Dropout(p=0.1, inplace=False)\n",
        "      )\n",
-       "      (i2t_norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n",
+       "      (i2t_norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
        "    )\n",
        "  )\n",
        "  (classifier): Sequential(\n",
-       "    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)\n",
-       "    (1): Linear(in_features=512, out_features=256, bias=True)\n",
+       "    (0): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)\n",
+       "    (1): Linear(in_features=1024, out_features=256, bias=True)\n",
        "    (2): ReLU()\n",
        "    (3): Dropout(p=0.3, inplace=False)\n",
        "    (4): Linear(in_features=256, out_features=3, bias=True)\n",
@@ -1205,24 +1217,25 @@
     "\n",
     "# ─────────────────────────────────────────────\n",
     "# Cell 5 — Model Architecture\n",
-    "#   • TextEncoder     : GloVe Embed → LSTM (uni/bi via CONFIG)\n",
-    "#   • ImageEncoder    : ResNet50 (no FC) → Linear proj → LSTM\n",
-    "#   • CoAttentionLayer: bidirectional 8-head MHA + FFN\n",
-    "#   • MultimodalSentimentModel: composing all above\n",
+    "#   • TextEncoder      : GloVe Embed → BiLSTM\n",
+    "#   • ImageEncoder     : ResNet50 (no FC) → Linear proj → BiLSTM\n",
+    "#   • CoAttentionLayer : bidirectional 8-head MHA + FFN\n",
+    "#   • MultimodalSentimentModel : composing all above\n",
     "# ─────────────────────────────────────────────\n",
     "\n",
     "# ──────────────────────────────────────────────────────────────\n",
-    "# 5a. Text Encoder\n",
+    "# 5a. Text Encoder  (GloVe + Bi/Uni-LSTM)\n",
     "# ──────────────────────────────────────────────────────────────\n",
     "class TextEncoder(nn.Module):\n",
     "    \"\"\"\n",
-    "    GloVe 300d Embedding (fine-tunable) → N-layer LSTM (uni or bi)\n",
+    "    GloVe 300d Embedding (fine-tunable) → N-layer BiLSTM\n",
     "    Output: [B, T, hidden_dim * (2 if bidirectional else 1)]\n",
     "    \"\"\"\n",
     "\n",
     "    def __init__(self, vocab_size, embed_dim, hidden_dim, num_layers,\n",
-    "                 pad_idx, pretrained_weights, finetune=True, bidirectional=False):\n",
+    "                 pad_idx, pretrained_weights, finetune=True, bidirectional=True):\n",
     "        super().__init__()\n",
+    "        self.bidirectional = bidirectional\n",
     "        self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx)\n",
     "        self.embedding.weight = nn.Parameter(\n",
     "            torch.from_numpy(pretrained_weights), requires_grad=finetune\n",
@@ -1237,32 +1250,33 @@
     "        )\n",
     "\n",
     "    def forward(self, token_ids):\n",
-    "        \"\"\"token_ids: [B, T]  →  [B, T, hidden_dim * dirs]\"\"\"\n",
+    "        \"\"\"token_ids: [B, T]  →  [B, T, hidden_dim * directions]\"\"\"\n",
     "        x = self.embedding(token_ids)         # [B, T, E]\n",
     "        out, _ = self.lstm(x)                 # [B, T, H * dirs]\n",
     "        return out\n",
     "\n",
     "\n",
     "# ──────────────────────────────────────────────────────────────\n",
-    "# 5b. Image Encoder\n",
+    "# 5b. Image Encoder  (ResNet50 + Bi/Uni-LSTM)\n",
     "# ──────────────────────────────────────────────────────────────\n",
     "class ImageEncoder(nn.Module):\n",
     "    \"\"\"\n",
     "    ResNet50 (pretrained, all layers unfrozen) → feature map [B, 2048, 7, 7]\n",
-    "    → flatten to [B, 49, 2048] → Linear 2048→proj_dim → N-layer LSTM\n",
+    "    → flatten to [B, 49, 2048] → Linear 2048→proj_dim → N-layer BiLSTM\n",
     "    Output: [B, 49, hidden_dim * (2 if bidirectional else 1)]\n",
     "    \"\"\"\n",
     "\n",
     "    def __init__(self, proj_dim, hidden_dim, num_layers,\n",
-    "                 finetune=True, bidirectional=False):\n",
+    "                 finetune=True, bidirectional=True):\n",
     "        super().__init__()\n",
+    "        self.bidirectional = bidirectional\n",
     "        resnet = tv_models.resnet50(weights=tv_models.ResNet50_Weights.DEFAULT)\n",
-    "        # Remove avgpool and fc; keep spatial feature maps from layer4\n",
+    "        # Strip avgpool and fc — keep spatial [B, 2048, 7, 7]\n",
     "        self.backbone = nn.Sequential(*list(resnet.children())[:-2])\n",
     "        if not finetune:\n",
     "            for p in self.backbone.parameters():\n",
     "                p.requires_grad = False\n",
-    "        # Freeze BN running stats for stable training\n",
+    "        # Keep BN running-stats frozen for stable fine-tuning\n",
     "        for m in self.backbone.modules():\n",
     "            if isinstance(m, nn.BatchNorm2d):\n",
     "                m.eval()\n",
@@ -1282,15 +1296,15 @@
     "\n",
     "    def forward(self, pixel_values):\n",
     "        \"\"\"pixel_values: [B, 3, H, W]  →  [B, 49, hidden_dim * dirs]\"\"\"\n",
-    "        feat  = self.backbone(pixel_values)           # [B, 2048, 7, 7]\n",
-    "        flat  = feat.flatten(2).permute(0, 2, 1)      # [B, 49, 2048]\n",
-    "        proj  = self.proj(flat)                        # [B, 49, proj_dim]\n",
-    "        out, _ = self.lstm(proj)                       # [B, 49, H * dirs]\n",
+    "        feat    = self.backbone(pixel_values)          # [B, 2048, 7, 7]\n",
+    "        flat    = feat.flatten(2).permute(0, 2, 1)     # [B, 49, 2048]\n",
+    "        proj    = self.proj(flat)                       # [B, 49, proj_dim]\n",
+    "        out, _  = self.lstm(proj)                       # [B, 49, H * dirs]\n",
     "        return out\n",
     "\n",
     "    def train(self, mode=True):\n",
     "        super().train(mode)\n",
-    "        # Always keep BN in eval regardless of overall mode\n",
+    "        # Always keep BN in eval regardless of overall model mode\n",
     "        for m in self.backbone.modules():\n",
     "            if isinstance(m, nn.BatchNorm2d):\n",
     "                m.eval()\n",
@@ -1298,13 +1312,13 @@
     "\n",
     "\n",
     "# ──────────────────────────────────────────────────────────────\n",
-    "# 5c. Co-Attention Layer (bidirectional, multi-head)\n",
+    "# 5c. Co-Attention Layer  (bidirectional multi-head)\n",
     "# ──────────────────────────────────────────────────────────────\n",
     "class CoAttentionLayer(nn.Module):\n",
     "    \"\"\"\n",
     "    Bidirectional Cross-Modal Co-Attention:\n",
-    "      • Text stream : Q=text,  K/V=image  → attended text\n",
-    "      • Image stream: Q=image, K/V=text   → attended image\n",
+    "      • Text  stream : Q=text,  K/V=image  →  text  attended by image\n",
+    "      • Image stream : Q=image, K/V=text   →  image attended by text\n",
     "    Each stream: MHA → Add & LayerNorm → FFN(GELU) → Add & LayerNorm\n",
     "    \"\"\"\n",
     "\n",
@@ -1333,25 +1347,25 @@
     "\n",
     "    def forward(self, text_feats, image_feats, text_pad_mask=None):\n",
     "        \"\"\"\n",
-    "        text_feats  : [B, T,  d_model]\n",
-    "        image_feats : [B, Lv, d_model]\n",
-    "        text_pad_mask : [B, T] bool — True = ignored padding position\n",
+    "        text_feats    : [B, T,  d_model]\n",
+    "        image_feats   : [B, Lv, d_model]\n",
+    "        text_pad_mask : [B, T] bool — True = padding (ignored) position\n",
     "        Returns: text_out [B, T, d], image_out [B, Lv, d]\n",
     "        \"\"\"\n",
-    "        # Guard: if any sample has ALL text positions masked (empty text),\n",
-    "        # unmasking that row prevents softmax(all -inf) = NaN in attention.\n",
+    "        # Guard: if any row has ALL positions masked (empty text),\n",
+    "        # clear that row's mask — softmax(all -inf) = NaN otherwise.\n",
     "        if text_pad_mask is not None:\n",
     "            all_masked = text_pad_mask.all(dim=1)\n",
     "            if all_masked.any():\n",
     "                text_pad_mask = text_pad_mask.clone()\n",
     "                text_pad_mask[all_masked] = False\n",
     "\n",
-    "        # Text attends to Image\n",
+    "        # ── Text attends to Image ──────────────────────────────\n",
     "        t_out, _ = self.t2i_attn(text_feats, image_feats, image_feats)\n",
     "        t_out     = self.t2i_norm1(text_feats + t_out)\n",
     "        t_out     = self.t2i_norm2(t_out + self.t2i_ffn(t_out))\n",
     "\n",
-    "        # Image attends to Text\n",
+    "        # ── Image attends to Text ──────────────────────────────\n",
     "        i_out, _ = self.i2t_attn(image_feats, text_feats, text_feats,\n",
     "                                  key_padding_mask=text_pad_mask)\n",
     "        i_out     = self.i2t_norm1(image_feats + i_out)\n",
@@ -1365,13 +1379,20 @@
     "# ──────────────────────────────────────────────────────────────\n",
     "class MultimodalSentimentModel(nn.Module):\n",
     "    \"\"\"\n",
-    "    Full architecture:\n",
-    "      text  → TextEncoder  → [B, T,  d_model]  ─┐\n",
-    "                                                  ├─ CoAttention ×2  ─→ mean-pool\n",
-    "      image → ImageEncoder → [B, 49, d_model]  ─┘\n",
-    "                                                  cat [B, d_model*2]\n",
-    "                                                  LayerNorm → FC(256) → ReLU\n",
-    "                                                  → Dropout → FC(3)\n",
+    "    Full BiLSTM + Co-Attention architecture:\n",
+    "\n",
+    "      text_content   → GloVe Embed → BiLSTM  → [B, T,  512]  ─┐\n",
+    "                                                                 ├─ Co-Attention × 2\n",
+    "      image_bytes    → ResNet50    → BiLSTM  → [B, 49, 512]  ─┘\n",
+    "                                                                 masked mean-pool each\n",
+    "                                                                 cat → [B, 1024]\n",
+    "                                                                 LayerNorm → FC(256) → ReLU\n",
+    "                                                                 Dropout → FC(3)\n",
+    "                                                                 ↓\n",
+    "                                                          final_sentiment  (neg/neu/pos)\n",
+    "\n",
+    "    text_sentiment / image_sentiment are metadata stored in the parquet but not fed\n",
+    "    to the model directly — the model learns from the raw text + image modalities.\n",
     "    \"\"\"\n",
     "\n",
     "    def __init__(self, config, vocab_size, pad_idx, pretrained_weights):\n",
@@ -1400,15 +1421,15 @@
     "        )\n",
     "        self.co_attn_layers = nn.ModuleList([\n",
     "            CoAttentionLayer(\n",
-    "                d_model=d,\n",
-    "                num_heads=config[\"num_heads\"],\n",
-    "                ffn_dim=config[\"co_attn_ffn_dim\"],\n",
-    "                dropout=config[\"co_attn_dropout\"],\n",
+    "                d_model  = d,\n",
+    "                num_heads= config[\"num_heads\"],\n",
+    "                ffn_dim  = config[\"co_attn_ffn_dim\"],\n",
+    "                dropout  = config[\"co_attn_dropout\"],\n",
     "            )\n",
     "            for _ in range(config[\"co_attn_layers\"])\n",
     "        ])\n",
     "\n",
-    "        fusion_in = config[\"fusion_input_dim\"]   # d_model * 2\n",
+    "        fusion_in = config[\"fusion_input_dim\"]   # 1024\n",
     "        clf_hid   = config[\"classifier_hidden\"]\n",
     "        drop      = config[\"classifier_dropout\"]\n",
     "\n",
@@ -1422,33 +1443,33 @@
     "\n",
     "    def forward(self, text_ids, images, text_pad_mask=None):\n",
     "        \"\"\"\n",
-    "        text_ids     : [B, T]\n",
-    "        images       : [B, 3, H, W]\n",
-    "        text_pad_mask: [B, T] bool (True = padding)\n",
-    "        Returns: logits [B, 3]\n",
+    "        text_ids      : [B, T]         — tokenised text_content indices\n",
+    "        images        : [B, 3, H, W]   — decoded image_bytes\n",
+    "        text_pad_mask : [B, T] bool    — True = padding position\n",
+    "        Returns: logits [B, 3]         — predicts final_sentiment\n",
     "        \"\"\"\n",
-    "        text_feats  = self.text_encoder(text_ids)       # [B, T, d_model]\n",
-    "        image_feats = self.image_encoder(images)         # [B, 49, d_model]\n",
+    "        text_feats  = self.text_encoder(text_ids)     # [B, T,  512]\n",
+    "        image_feats = self.image_encoder(images)       # [B, 49, 512]\n",
     "\n",
     "        for layer in self.co_attn_layers:\n",
-    "            text_feats, image_feats = layer(text_feats, image_feats,\n",
-    "                                            text_pad_mask=text_pad_mask)\n",
+    "            text_feats, image_feats = layer(\n",
+    "                text_feats, image_feats, text_pad_mask=text_pad_mask\n",
+    "            )\n",
     "\n",
-    "        # Mean-pool both attended sequences\n",
+    "        # Masked mean-pool for text (skip padding positions)\n",
     "        if text_pad_mask is not None:\n",
-    "            # Masked mean for text (exclude padding)\n",
-    "            valid_mask  = (~text_pad_mask).float().unsqueeze(-1)\n",
-    "            text_pool   = (text_feats * valid_mask).sum(1) / valid_mask.sum(1).clamp(min=1)\n",
+    "            valid_mask = (~text_pad_mask).float().unsqueeze(-1)    # [B, T, 1]\n",
+    "            text_pool  = (text_feats * valid_mask).sum(1) / valid_mask.sum(1).clamp(min=1)\n",
     "        else:\n",
-    "            text_pool   = text_feats.mean(1)\n",
+    "            text_pool  = text_feats.mean(1)\n",
     "\n",
-    "        image_pool  = image_feats.mean(1)\n",
-    "        fused       = torch.cat([text_pool, image_pool], dim=-1)   # [B, d_model*2]\n",
-    "        return self.classifier(fused)                               # [B, 3]\n",
+    "        image_pool = image_feats.mean(1)                           # [B, 512]\n",
+    "        fused      = torch.cat([text_pool, image_pool], dim=-1)    # [B, 1024]\n",
+    "        return self.classifier(fused)                              # [B, 3]\n",
     "\n",
     "    def train(self, mode=True):\n",
     "        super().train(mode)\n",
-    "        self.image_encoder.train(mode)   # keeps BN in eval\n",
+    "        self.image_encoder.train(mode)    # keeps BN in eval\n",
     "        return self\n",
     "\n",
     "\n",
@@ -1456,10 +1477,10 @@
     "device = torch.device(CONFIG[\"device\"])\n",
     "\n",
     "model = MultimodalSentimentModel(\n",
-    "    config=CONFIG,\n",
-    "    vocab_size=VOCAB_SIZE,\n",
-    "    pad_idx=PAD_IDX,\n",
-    "    pretrained_weights=embedding_matrix,\n",
+    "    config            = CONFIG,\n",
+    "    vocab_size        = VOCAB_SIZE,\n",
+    "    pad_idx           = PAD_IDX,\n",
+    "    pretrained_weights= embedding_matrix,\n",
     ").to(device)\n",
     "\n",
     "total_p     = sum(p.numel() for p in model.parameters())\n",
@@ -1470,12 +1491,12 @@
     "# ── Quick forward-pass test ──────────────────────────────────────────\n",
     "model.eval()\n",
     "with torch.no_grad():\n",
-    "    _b = next(iter(train_loader))\n",
-    "    _txt = _b[\"text\"].to(device)\n",
-    "    _img = _b[\"image\"].to(device)\n",
-    "    _msk = (_txt == PAD_IDX)\n",
+    "    _b      = next(iter(train_loader))\n",
+    "    _txt    = _b[\"text\"].to(device)\n",
+    "    _img    = _b[\"image\"].to(device)\n",
+    "    _msk    = (_txt == PAD_IDX)\n",
     "    _logits = model(_txt, _img, text_pad_mask=_msk)\n",
-    "print(f\"Forward pass OK  |  logits shape: {tuple(_logits.shape)}  (expect [B, 3])\")\n",
+    "print(f\"Forward pass OK  |  logits shape: {tuple(_logits.shape)}  (expect [{CONFIG['batch_size']}, 3])\")\n",
     "del _b, _txt, _img, _msk, _logits\n",
     "model.train()\n"
    ]
@@ -1498,7 +1519,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5b488d640a634b34a802249aa3e96ccd",
+       "model_id": "e74624814805446a92ec0a76a815414a",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1513,13 +1534,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    1      0.9765     0.5322    1.0304   0.6386   0.4913   9.97e-05  ✓ best saved\n"
+      "    1      0.9568     0.5565    0.9686   0.4568   0.4287   9.97e-05  ✓ best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0767248e759c4fb6b97406ebdfe93c7c",
+       "model_id": "eef6237c2ce34cfcb60debac32e85abe",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1534,13 +1555,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    2      0.7118     0.6962    0.9913   0.6319   0.5461   9.89e-05  ✓ best saved\n"
+      "    2      0.7113     0.6951    0.9205   0.6630   0.5668   9.89e-05  ✓ best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5acc7c573ce14e72bc1eb1731c97d032",
+       "model_id": "a893295b6d504507867740d28978f54d",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1555,13 +1576,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    3      0.5302     0.7833    0.9568   0.6364   0.5586   9.76e-05  ✓ best saved\n"
+      "    3      0.5029     0.7924    1.0384   0.6075   0.5455   9.76e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "44616be0cc90467e8c7263cb20709e4d",
+       "model_id": "48f906e976e74d9cb9d0a391987b9c3d",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1576,13 +1597,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    4      0.3743     0.8476    1.1457   0.6652   0.5778   9.57e-05  ✓ best saved\n"
+      "    4      0.3469     0.8609    1.2765   0.6452   0.5623   9.57e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "ca3039baa0be44af9c2854d3adeb86f7",
+       "model_id": "1cea3879de154dd2b6b6c7531713af13",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1597,13 +1618,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    5      0.2700     0.8919    1.4814   0.6430   0.5415   9.34e-05  \n"
+      "    5      0.2237     0.9144    1.3674   0.6275   0.5647   9.34e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "9068c556a53f4dd4bbad081865317e6f",
+       "model_id": "5bfde895137d4d6dad4a28c8df8d5957",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1615,16 +1636,66 @@
      "output_type": "display_data"
     },
     {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>\n",
+      "Traceback (most recent call last):\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "    self._shutdown_workers()\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "    if w.is_alive():\n",
+      "       ^^^^^^^^^^^^\n",
+      "  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "   Exception ignored in:     <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>   \n",
+      "Traceback (most recent call last):\n",
+      "   File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "^    ^self._shutdown_workers()^\n",
+      "^  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "^^    ^if w.is_alive():^\n",
+      "^ ^^  ^^ ^ ^ ^ ^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AssertionError^: can only test a child process\n",
+      "  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'Exception ignored in: \n",
+      " <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>\n",
+      " Traceback (most recent call last):\n",
+      "   File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "      self._shutdown_workers() \n",
+      "   File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "     if w.is_alive(): \n",
+      "     ^ ^ ^ ^ ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "^  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "^    ^ ^assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "^^^ ^ ^ ^ ^ ^  ^ ^^ \n",
+      "AssertionError : ^can only test a child process\n",
+      "^Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>\n",
+      "^Traceback (most recent call last):\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "    ^self._shutdown_workers()\n",
+      "^  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "    ^if w.is_alive():\n",
+      "^^ ^^  ^^  ^  ^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "^^  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "^^    ^assert self._parent_pid == os.getpid(), 'can only test a child process'^\n",
+      "\n",
+      "AssertionError : can only test a child process \n",
+      "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AssertionError: can only test a child process\n"
+     ]
+    },
+    {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    6      0.1796     0.9299    1.5640   0.6364   0.5612   9.05e-05  \n"
+      "    6      0.1764     0.9382    1.3676   0.6674   0.5903   9.05e-05  ✓ best saved\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "40278bd8dfeb4c3ba31aa84d75e227b9",
+       "model_id": "303e1f87a7ab49e2885970f23362663e",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1639,13 +1710,13 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    7      0.1566     0.9460    1.9166   0.6652   0.5525   8.73e-05  \n"
+      "    7      0.1563     0.9490    1.8190   0.6630   0.5656   8.73e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5868aa4f0c844f40b53f43ede75633ba",
+       "model_id": "9037be0de84d495dbc55918414b13272",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1657,16 +1728,44 @@
      "output_type": "display_data"
     },
     {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>\n",
+      "Traceback (most recent call last):\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "    self._shutdown_workers()\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "    if w.is_alive():\n",
+      "       ^^^^^^^^^^^^\n",
+      "  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "Exception ignored in:   <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0> \n",
+      "  Traceback (most recent call last):\n",
+      "    File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "      self._shutdown_workers() \n",
+      "   File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "    ^if w.is_alive():^\n",
+      "^ ^^ ^^ ^^^^^ ^^^  ^^ ^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "^AssertionError\n",
+      ":   File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "can only test a child process\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AssertionError: can only test a child process\n"
+     ]
+    },
+    {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    8      0.1203     0.9598    2.0288   0.6874   0.5640   8.36e-05  \n"
+      "    8      0.1422     0.9590    1.9333   0.6563   0.5855   8.36e-05  \n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "228f158e4b8045cdb3740cff1714dc3d",
+       "model_id": "5151a1140b3f44f98b4a6fd00c53fd62",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1681,11 +1780,249 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
+      "    9      0.0918     0.9745    2.7766   0.6807   0.5873   7.96e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "152acdf19dcf47d9b02c0256cb32933a",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 10/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Exception ignored in: <function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>\n",
+      "Traceback (most recent call last):\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "    self._shutdown_workers()\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "    if w.is_alive():\n",
+      "       ^^^^^^^^^^^^\n",
+      "  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "           ^^^Exception ignored in: ^<function _MultiProcessingDataLoaderIter.__del__ at 0x79ce07ec5bc0>^\n",
+      "^Traceback (most recent call last):\n",
+      "^^^  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1707, in __del__\n",
+      "^    self._shutdown_workers()^^^\n",
+      "  File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py\", line 1690, in _shutdown_workers\n",
+      "^^^    ^if w.is_alive():\n",
+      "^ ^ ^^  ^ ^^ ^ ^^^^^^^^^^^\n",
+      "^AssertionError^: ^can only test a child process^\n",
+      "^^^\n",
+      "  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 160, in is_alive\n",
+      "    assert self._parent_pid == os.getpid(), 'can only test a child process'\n",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+      "AssertionError: can only test a child process\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   10      0.0840     0.9751    2.3411   0.6874   0.6008   7.52e-05  ✓ best saved\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "375d61c6110945baa169ef895742e1ff",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 11/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   11      0.0818     0.9834    2.3675   0.6696   0.6002   7.06e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "d274542be30e41a0b2b0d247c0b5b78b",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 12/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   12      0.0649     0.9834    2.3633   0.6608   0.5899   6.58e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "ff21e6bc3a1646fb9267334cd28c0df8",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 13/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   13      0.0525     0.9831    2.8330   0.6341   0.5843   6.08e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "904ec68c497740c3a4671af7ed0544b5",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 14/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   14      0.0599     0.9856    2.9907   0.6718   0.6027   5.57e-05  ✓ best saved\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "ae1c635b32964b93a97f8a84e199c821",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 15/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   15      0.0437     0.9892    3.1978   0.6785   0.5861   5.05e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "56f8a3cf80634d67897e40e89be7ad3a",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 16/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   16      0.0292     0.9870    3.0387   0.6674   0.5974   4.53e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "8c679824c90743999869be199668082a",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 17/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   17      0.0217     0.9900    3.3567   0.6608   0.5784   4.02e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "bc34a18537754f658c95378425706034",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 18/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   18      0.0218     0.9920    3.3534   0.6785   0.5934   3.52e-05  \n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "3546b8c9449f4a9faba347ec315a794e",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Epoch 19/30:   0%|          | 0/113 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
       "\n",
-      "Early stopping at epoch 9  (no improvement for 5 epochs)\n",
+      "Early stopping at epoch 19  (no improvement for 5 epochs)\n",
       "\n",
-      "Training complete.  Best val macro-F1 : 0.5778\n",
-      "Best checkpoint   : /content/drive/MyDrive/Colab Notebooks/MVSA_Single/lstm_checkpoints/lstm_best.pt\n"
+      "Training complete.  Best val macro-F1 : 0.6027\n",
+      "Best checkpoint   : /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bilstm_checkpoints/bilstm_best.pt\n"
      ]
     }
    ],
@@ -1747,11 +2084,11 @@
     "    return avg_loss, acc, f1\n",
     "\n",
     "\n",
-    "# ── Training loop ───────────────────────────────────────────────────\n",
-    "best_val_f1      = 0.0\n",
-    "patience_counter = 0\n",
-    "best_ckpt_path   = os.path.join(CONFIG[\"checkpoint_dir\"], \"lstm_best.pt\")\n",
-    "history          = []\n",
+    "# ── Training loop ────────────────────────────────────────────────────\n",
+    "best_val_f1       = 0.0\n",
+    "patience_counter  = 0\n",
+    "best_ckpt_path    = os.path.join(CONFIG[\"checkpoint_dir\"], \"bilstm_best.pt\")\n",
+    "history           = []\n",
     "nan_batches_total = 0\n",
     "\n",
     "header = (f\"{'Epoch':>5}  {'Train Loss':>10}  {'Train Acc':>9}  \"\n",
@@ -1778,7 +2115,7 @@
     "\n",
     "        # Skip corrupted batches rather than letting NaN propagate\n",
     "        if torch.isnan(loss):\n",
-    "            nan_this_epoch += 1\n",
+    "            nan_this_epoch   += 1\n",
     "            nan_batches_total += 1\n",
     "            pbar.set_postfix(loss=\"NaN-skip\")\n",
     "            continue\n",
@@ -1803,7 +2140,7 @@
     "    if nan_this_epoch:\n",
     "        print(f\"  [WARN] epoch {epoch}: {nan_this_epoch} NaN-loss batches skipped.\")\n",
     "\n",
-    "    # Early stopping & checkpoint\n",
+    "    # ── Early stopping & checkpoint ──────────────────────────────\n",
     "    status = \"\"\n",
     "    if val_f1 > best_val_f1:\n",
     "        best_val_f1      = val_f1\n",
@@ -1825,9 +2162,9 @@
     "            break\n",
     "\n",
     "    history.append({\n",
-    "        \"epoch\": epoch,\n",
+    "        \"epoch\"     : epoch,\n",
     "        \"train_loss\": tr_loss, \"train_acc\": tr_acc,\n",
-    "        \"val_loss\": val_loss,  \"val_acc\": val_acc,  \"val_f1\": val_f1,\n",
+    "        \"val_loss\"  : val_loss, \"val_acc\"  : val_acc, \"val_f1\": val_f1,\n",
     "    })\n",
     "\n",
     "    print(f\"{epoch:>5}  {tr_loss:>10.4f}  {tr_acc:>9.4f}  \"\n",
@@ -1842,7 +2179,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 10,
    "id": "6e9f2a93",
    "metadata": {},
    "outputs": [
@@ -1850,14 +2187,14 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Loading best checkpoint: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/lstm_checkpoints/lstm_best.pt\n",
-      "  Checkpoint epoch : 4   val_f1=0.5778   val_acc=0.6652\n"
+      "Loading best checkpoint: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bilstm_checkpoints/bilstm_best.pt\n",
+      "  Checkpoint epoch : 14   val_f1=0.6027   val_acc=0.6718\n"
      ]
     },
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "202153761f2d44ffbe3e1b435f760e89",
+       "model_id": "8f32bd166051475c8db6d0aff514e318",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1873,59 +2210,49 @@
      "output_type": "stream",
      "text": [
       "\n",
-      "==============================================================\n",
-      "  Test Set Results — Multimodal LSTM + Co-Attention\n",
-      "==============================================================\n",
-      "  Accuracy  (overall)    : 0.6704  (67.04%)\n",
-      "  Macro F1  (unweighted) : 0.5852\n",
+      "==================================================================\n",
+      "  Test Set Results — Multimodal BiLSTM + Co-Attention\n",
+      "==================================================================\n",
+      "  Accuracy  (overall)    : 0.7168  (71.68%)\n",
+      "  Macro F1  (unweighted) : 0.5941\n",
       "\n",
       "  Per-Class Classification Report:\n",
       "              precision    recall  f1-score   support\n",
       "\n",
-      "    negative     0.6408    0.4853    0.5523       136\n",
-      "     neutral     0.3467    0.5532    0.4262        47\n",
-      "    positive     0.7701    0.7844    0.7772       269\n",
+      "    negative     0.7245    0.5221    0.6068       136\n",
+      "     neutral     0.3810    0.3404    0.3596        47\n",
+      "    positive     0.7596    0.8810    0.8158       269\n",
       "\n",
-      "    accuracy                         0.6704       452\n",
-      "   macro avg     0.5858    0.6076    0.5852       452\n",
-      "weighted avg     0.6871    0.6704    0.6730       452\n",
+      "    accuracy                         0.7168       452\n",
+      "   macro avg     0.6217    0.5812    0.5941       452\n",
+      "weighted avg     0.7097    0.7168    0.7055       452\n",
       "\n",
       "  Confusion Matrix  (rows=true, cols=pred):\n",
       "              negative     neutral    positive\n",
-      "    negative          66          23          47\n",
-      "     neutral           5          26          16\n",
-      "    positive          32          26         211\n",
+      "    negative          71          13          52\n",
+      "     neutral           8          16          23\n",
+      "    positive          19          13         237\n",
       "\n",
       "  Training History (last 5 epochs):\n",
       " epoch  train_loss  train_acc  val_loss  val_acc   val_f1\n",
-      "     4    0.374340   0.847561  1.145670 0.665188 0.577823\n",
-      "     5    0.269988   0.891907  1.481398 0.643016 0.541454\n",
-      "     6    0.179635   0.929878  1.563975 0.636364 0.561192\n",
-      "     7    0.156629   0.945953  1.916575 0.665188 0.552532\n",
-      "     8    0.120260   0.959812  2.028830 0.687361 0.563982\n",
+      "    14    0.059865   0.985588  2.990694 0.671840 0.602743\n",
+      "    15    0.043684   0.989191  3.197844 0.678492 0.586083\n",
+      "    16    0.029181   0.986973  3.038684 0.667406 0.597445\n",
+      "    17    0.021732   0.990022  3.356691 0.660754 0.578448\n",
+      "    18    0.021774   0.991962  3.353411 0.678492 0.593366\n",
       "\n",
-      "==============================================================\n",
-      "  lstm_full.pt                         352.3 MB\n",
-      "  lstm_weights_only.pt                 117.6 MB\n",
-      "  config.json                          0.0 MB\n",
+      "==================================================================\n",
+      "  bilstm_full.pt                            510.6 MB\n",
+      "  bilstm_weights_only.pt                    170.3 MB\n",
+      "  config.json                               0.0 MB\n",
       "\n",
-      "  Artifacts saved to: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/lstm_final\n",
-      "==============================================================\n"
-     ]
-    },
-    {
-     "ename": "",
-     "evalue": "",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[1;31mThe Kernel crashed while executing code in the current cell or a previous cell. \n",
-      "\u001b[1;31mPlease review the code in the cell(s) to identify a possible cause of the failure. \n",
-      "\u001b[1;31mClick <a href='https://aka.ms/vscodeJupyterKernelCrash'>here</a> for more info. \n",
-      "\u001b[1;31mView Jupyter <a href='command:jupyter.viewOutput'>log</a> for further details."
+      "  Artifacts saved to: /content/drive/MyDrive/Colab Notebooks/MVSA_Single/bilstm_final\n",
+      "==================================================================\n"
      ]
     }
    ],
    "source": [
+    "\n",
     "# ─────────────────────────────────────────────\n",
     "# Cell 7 — Evaluation on Test Set\n",
     "# ─────────────────────────────────────────────\n",
@@ -1962,9 +2289,9 @@
     "test_acc    = accuracy_score(all_labels, all_preds)\n",
     "test_f1     = f1_score(all_labels, all_preds, average=\"macro\", zero_division=0)\n",
     "\n",
-    "SEP = \"=\" * 62\n",
+    "SEP = \"=\" * 66\n",
     "print(f\"\\n{SEP}\")\n",
-    "print(\"  Test Set Results — Multimodal LSTM + Co-Attention\")\n",
+    "print(\"  Test Set Results — Multimodal BiLSTM + Co-Attention\")\n",
     "print(SEP)\n",
     "print(f\"  Accuracy  (overall)    : {test_acc:.4f}  ({test_acc*100:.2f}%)\")\n",
     "print(f\"  Macro F1  (unweighted) : {test_f1:.4f}\")\n",
@@ -1976,7 +2303,7 @@
     "# ── Confusion Matrix (text table) ────────────────────────────────────\n",
     "cm = confusion_matrix(all_labels, all_preds)\n",
     "print(\"  Confusion Matrix  (rows=true, cols=pred):\")\n",
-    "col_w = max(len(n) for n in class_names) + 2\n",
+    "col_w      = max(len(n) for n in class_names) + 2\n",
     "header_row = \" \" * 12 + \"  \".join(f\"{n:>{col_w}}\" for n in class_names)\n",
     "print(header_row)\n",
     "for i, row_vals in enumerate(cm):\n",
@@ -1992,7 +2319,7 @@
     "print(f\"\\n{SEP}\")\n",
     "\n",
     "# ── Save final model & artifacts ─────────────────────────────────────\n",
-    "SAVE_DIR = \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/lstm_final\"\n",
+    "SAVE_DIR = \"/content/drive/MyDrive/Colab Notebooks/MVSA_Single/bilstm_final\"\n",
     "os.makedirs(SAVE_DIR, exist_ok=True)\n",
     "\n",
     "torch.save({\n",
@@ -2006,10 +2333,10 @@
     "    \"test_acc\"            : test_acc,\n",
     "    \"test_f1\"             : test_f1,\n",
     "    \"history\"             : history,\n",
-    "}, os.path.join(SAVE_DIR, \"lstm_full.pt\"))\n",
+    "}, os.path.join(SAVE_DIR, \"bilstm_full.pt\"))\n",
     "\n",
-    "# Weights only (lighter, for inference)\n",
-    "torch.save(model.state_dict(), os.path.join(SAVE_DIR, \"lstm_weights_only.pt\"))\n",
+    "# Weights only — lighter file for inference\n",
+    "torch.save(model.state_dict(), os.path.join(SAVE_DIR, \"bilstm_weights_only.pt\"))\n",
     "\n",
     "# Config + label map as JSON\n",
     "cfg_json = {k: v for k, v in CONFIG.items() if not callable(v)}\n",
@@ -2018,10 +2345,10 @@
     "with open(os.path.join(SAVE_DIR, \"config.json\"), \"w\") as f:\n",
     "    json.dump(cfg_json, f, indent=2)\n",
     "\n",
-    "for fname in [\"lstm_full.pt\", \"lstm_weights_only.pt\", \"config.json\"]:\n",
+    "for fname in [\"bilstm_full.pt\", \"bilstm_weights_only.pt\", \"config.json\"]:\n",
     "    fpath = os.path.join(SAVE_DIR, fname)\n",
     "    mb    = os.path.getsize(fpath) / (1024 * 1024)\n",
-    "    print(f\"  {fname:<35}  {mb:.1f} MB\")\n",
+    "    print(f\"  {fname:<40}  {mb:.1f} MB\")\n",
     "\n",
     "print(f\"\\n  Artifacts saved to: {SAVE_DIR}\")\n",
     "print(SEP)\n"
